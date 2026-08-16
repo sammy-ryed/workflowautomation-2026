@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Definitions_ITServiceRequest"
+                  targetNamespace="http://bpmn.io/schema/bpmn"
+                  exporter="Claude" exporterVersion="1.0">
+  <bpmn:process id="Process_ITServiceRequest" name="IT Service Request Handling" isExecutable="true">
+
+    <bpmn:startEvent id="StartEvent_1" name="Employee Reports IT Problem">
+      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+
+    <bpmn:task id="Task_RegisterRequest" name="Help Desk Registers Request">
+      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_CheckSeverity" name="Help Desk Checks Severity">
+      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:outgoing>Flow_3</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="Gateway_Severity" name="Severity Level?">
+      <bpmn:incoming>Flow_3</bpmn:incoming>
+      <bpmn:outgoing>Flow_Low</bpmn:outgoing>
+      <bpmn:outgoing>Flow_High</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="Task_AssignSupportTech" name="Assign to Support Technician">
+      <bpmn:incoming>Flow_Low</bpmn:incoming>
+      <bpmn:outgoing>Flow_LowToInvestigate</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_AssignSeniorTech" name="Assign to Senior Technician">
+      <bpmn:incoming>Flow_High</bpmn:incoming>
+      <bpmn:outgoing>Flow_HighToInvestigate</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_Investigate" name="Technician Investigates Problem">
+      <bpmn:incoming>Flow_LowToInvestigate</bpmn:incoming>
+      <bpmn:incoming>Flow_HighToInvestigate</bpmn:incoming>
+      <bpmn:outgoing>Flow_4</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:exclusiveGateway id="Gateway_Resolvable" name="Resolvable Internally?">
+      <bpmn:incoming>Flow_4</bpmn:incoming>
+      <bpmn:outgoing>Flow_Resolvable</bpmn:outgoing>
+      <bpmn:outgoing>Flow_NotResolvable</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:task id="Task_FixProblem" name="Technician Fixes the Problem">
+      <bpmn:incoming>Flow_Resolvable</bpmn:incoming>
+      <bpmn:outgoing>Flow_FixToUpdate</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_EscalateExternal" name="Escalate to External Service Provider">
+      <bpmn:incoming>Flow_NotResolvable</bpmn:incoming>
+      <bpmn:outgoing>Flow_EscalateToUpdate</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_UpdateStatus" name="Help Desk Updates Request Status">
+      <bpmn:incoming>Flow_FixToUpdate</bpmn:incoming>
+      <bpmn:incoming>Flow_EscalateToUpdate</bpmn:incoming>
+      <bpmn:outgoing>Flow_5</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:task id="Task_NotifyEmployee" name="Employee Receives Resolution Notification">
+      <bpmn:incoming>Flow_5</bpmn:incoming>
+      <bpmn:outgoing>Flow_6</bpmn:outgoing>
+    </bpmn:task>
+
+    <bpmn:endEvent id="EndEvent_1" name="Request Closed">
+      <bpmn:incoming>Flow_6</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Task_RegisterRequest" />
+    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_RegisterRequest" targetRef="Task_CheckSeverity" />
+    <bpmn:sequenceFlow id="Flow_3" sourceRef="Task_CheckSeverity" targetRef="Gateway_Severity" />
+    <bpmn:sequenceFlow id="Flow_Low" name="Low" sourceRef="Gateway_Severity" targetRef="Task_AssignSupportTech" />
+    <bpmn:sequenceFlow id="Flow_High" name="High" sourceRef="Gateway_Severity" targetRef="Task_AssignSeniorTech" />
+    <bpmn:sequenceFlow id="Flow_LowToInvestigate" sourceRef="Task_AssignSupportTech" targetRef="Task_Investigate" />
+    <bpmn:sequenceFlow id="Flow_HighToInvestigate" sourceRef="Task_AssignSeniorTech" targetRef="Task_Investigate" />
+    <bpmn:sequenceFlow id="Flow_4" sourceRef="Task_Investigate" targetRef="Gateway_Resolvable" />
+    <bpmn:sequenceFlow id="Flow_Resolvable" name="Yes" sourceRef="Gateway_Resolvable" targetRef="Task_FixProblem" />
+    <bpmn:sequenceFlow id="Flow_NotResolvable" name="No" sourceRef="Gateway_Resolvable" targetRef="Task_EscalateExternal" />
+    <bpmn:sequenceFlow id="Flow_FixToUpdate" sourceRef="Task_FixProblem" targetRef="Task_UpdateStatus" />
+    <bpmn:sequenceFlow id="Flow_EscalateToUpdate" sourceRef="Task_EscalateExternal" targetRef="Task_UpdateStatus" />
+    <bpmn:sequenceFlow id="Flow_5" sourceRef="Task_UpdateStatus" targetRef="Task_NotifyEmployee" />
+    <bpmn:sequenceFlow id="Flow_6" sourceRef="Task_NotifyEmployee" targetRef="EndEvent_1" />
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_ITServiceRequest">
+
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <omgdc:Bounds x="150" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel><omgdc:Bounds x="126" y="225" width="86" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_RegisterRequest_di" bpmnElement="Task_RegisterRequest">
+        <omgdc:Bounds x="240" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CheckSeverity_di" bpmnElement="Task_CheckSeverity">
+        <omgdc:Bounds x="400" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Severity_di" bpmnElement="Gateway_Severity" isMarkerVisible="true">
+        <omgdc:Bounds x="560" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel><omgdc:Bounds x="540" y="232" width="90" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AssignSupportTech_di" bpmnElement="Task_AssignSupportTech">
+        <omgdc:Bounds x="660" y="40" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_AssignSeniorTech_di" bpmnElement="Task_AssignSeniorTech">
+        <omgdc:Bounds x="660" y="300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_Investigate_di" bpmnElement="Task_Investigate">
+        <omgdc:Bounds x="820" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_Resolvable_di" bpmnElement="Gateway_Resolvable" isMarkerVisible="true">
+        <omgdc:Bounds x="980" y="175" width="50" height="50" />
+        <bpmndi:BPMNLabel><omgdc:Bounds x="955" y="232" width="100" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_FixProblem_di" bpmnElement="Task_FixProblem">
+        <omgdc:Bounds x="1080" y="40" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_EscalateExternal_di" bpmnElement="Task_EscalateExternal">
+        <omgdc:Bounds x="1080" y="300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_UpdateStatus_di" bpmnElement="Task_UpdateStatus">
+        <omgdc:Bounds x="1240" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_NotifyEmployee_di" bpmnElement="Task_NotifyEmployee">
+        <omgdc:Bounds x="1400" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_1">
+        <omgdc:Bounds x="1560" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel><omgdc:Bounds x="1538" y="225" width="80" height="27" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNEdge id="Flow_1_di" bpmnElement="Flow_1">
+        <omgdi:waypoint x="186" y="200" /><omgdi:waypoint x="240" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_2_di" bpmnElement="Flow_2">
+        <omgdi:waypoint x="340" y="200" /><omgdi:waypoint x="400" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_3_di" bpmnElement="Flow_3">
+        <omgdi:waypoint x="500" y="200" /><omgdi:waypoint x="560" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Low_di" bpmnElement="Flow_Low">
+        <omgdi:waypoint x="585" y="175" /><omgdi:waypoint x="585" y="80" /><omgdi:waypoint x="660" y="80" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_High_di" bpmnElement="Flow_High">
+        <omgdi:waypoint x="585" y="225" /><omgdi:waypoint x="585" y="340" /><omgdi:waypoint x="660" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_LowToInvestigate_di" bpmnElement="Flow_LowToInvestigate">
+        <omgdi:waypoint x="760" y="80" /><omgdi:waypoint x="790" y="80" /><omgdi:waypoint x="790" y="180" /><omgdi:waypoint x="820" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_HighToInvestigate_di" bpmnElement="Flow_HighToInvestigate">
+        <omgdi:waypoint x="760" y="340" /><omgdi:waypoint x="790" y="340" /><omgdi:waypoint x="790" y="220" /><omgdi:waypoint x="820" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_4_di" bpmnElement="Flow_4">
+        <omgdi:waypoint x="920" y="200" /><omgdi:waypoint x="980" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_Resolvable_di" bpmnElement="Flow_Resolvable">
+        <omgdi:waypoint x="1005" y="175" /><omgdi:waypoint x="1005" y="80" /><omgdi:waypoint x="1080" y="80" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_NotResolvable_di" bpmnElement="Flow_NotResolvable">
+        <omgdi:waypoint x="1005" y="225" /><omgdi:waypoint x="1005" y="340" /><omgdi:waypoint x="1080" y="340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_FixToUpdate_di" bpmnElement="Flow_FixToUpdate">
+        <omgdi:waypoint x="1180" y="80" /><omgdi:waypoint x="1210" y="80" /><omgdi:waypoint x="1210" y="180" /><omgdi:waypoint x="1240" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_EscalateToUpdate_di" bpmnElement="Flow_EscalateToUpdate">
+        <omgdi:waypoint x="1180" y="340" /><omgdi:waypoint x="1210" y="340" /><omgdi:waypoint x="1210" y="220" /><omgdi:waypoint x="1240" y="220" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_5_di" bpmnElement="Flow_5">
+        <omgdi:waypoint x="1340" y="200" /><omgdi:waypoint x="1400" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_6_di" bpmnElement="Flow_6">
+        <omgdi:waypoint x="1500" y="200" /><omgdi:waypoint x="1560" y="200" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
