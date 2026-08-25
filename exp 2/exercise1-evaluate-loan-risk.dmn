@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="Definitions_EvaluateLoanRisk"
+             name="Evaluate Loan Risk"
+             namespace="http://camunda.org/schema/1.0/dmn"
+             exporter="Claude" exporterVersion="1.0">
+
+  <decision id="evaluate-loan-risk" name="Evaluate Loan Risk">
+    <decisionTable id="DecisionTable_LoanRisk" hitPolicy="UNIQUE">
+
+      <input id="Input_CreditScore" label="Credit Score" camunda:inputVariable="creditScore">
+        <inputExpression id="InputExpression_CreditScore" typeRef="integer">
+          <text>creditScore</text>
+        </inputExpression>
+      </input>
+
+      <input id="Input_LoanAmount" label="Loan Amount" camunda:inputVariable="loanAmount">
+        <inputExpression id="InputExpression_LoanAmount" typeRef="double">
+          <text>loanAmount</text>
+        </inputExpression>
+      </input>
+
+      <output id="Output_RiskTier" label="Risk Tier" name="riskTier" typeRef="string" />
+      <output id="Output_ManualReview" label="Requires Manual Review" name="requiresManualReview" typeRef="boolean" />
+
+      <rule id="Rule_Low">
+        <inputEntry id="InputEntry_Low_Score">
+          <text>&gt;= 750</text>
+        </inputEntry>
+        <inputEntry id="InputEntry_Low_Amount">
+          <text>&lt;= 50000</text>
+        </inputEntry>
+        <outputEntry id="OutputEntry_Low_Tier">
+          <text>"LOW"</text>
+        </outputEntry>
+        <outputEntry id="OutputEntry_Low_Review">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+
+      <rule id="Rule_MediumHighAmount">
+        <inputEntry id="InputEntry_MedAmt_Score">
+          <text>&gt;= 750</text>
+        </inputEntry>
+        <inputEntry id="InputEntry_MedAmt_Amount">
+          <text>&gt; 50000</text>
+        </inputEntry>
+        <outputEntry id="OutputEntry_MedAmt_Tier">
+          <text>"MEDIUM"</text>
+        </outputEntry>
+        <outputEntry id="OutputEntry_MedAmt_Review">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+
+      <rule id="Rule_MediumScore">
+        <inputEntry id="InputEntry_MedScore_Score">
+          <text>[600..749]</text>
+        </inputEntry>
+        <inputEntry id="InputEntry_MedScore_Amount">
+          <text>-</text>
+        </inputEntry>
+        <outputEntry id="OutputEntry_MedScore_Tier">
+          <text>"MEDIUM"</text>
+        </outputEntry>
+        <outputEntry id="OutputEntry_MedScore_Review">
+          <text>true</text>
+        </outputEntry>
+      </rule>
+
+      <rule id="Rule_High">
+        <inputEntry id="InputEntry_High_Score">
+          <text>&lt; 600</text>
+        </inputEntry>
+        <inputEntry id="InputEntry_High_Amount">
+          <text>-</text>
+        </inputEntry>
+        <outputEntry id="OutputEntry_High_Tier">
+          <text>"HIGH"</text>
+        </outputEntry>
+        <outputEntry id="OutputEntry_High_Review">
+          <text>false</text>
+        </outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_EvaluateLoanRisk">
+      <dmndi:DMNShape id="DMNShape_evaluate-loan-risk" dmnElementRef="evaluate-loan-risk">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/"
+             xmlns:dmndi="https://www.omg.org/spec/DMN/20191111/DMNDI/"
+             xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/"
+             xmlns:camunda="http://camunda.org/schema/1.0/dmn"
+             id="Definitions_CalculateDiscounts"
+             name="Calculate Discounts"
+             namespace="http://camunda.org/schema/1.0/dmn"
+             exporter="Claude" exporterVersion="1.0">
+
+  <decision id="calculate-discounts" name="Calculate Total Discount">
+    <decisionTable id="DecisionTable_Discounts" hitPolicy="COLLECT" aggregation="SUM">
+
+      <input id="Input_CustomerTier" label="Customer Tier" camunda:inputVariable="customerTier">
+        <inputExpression id="InputExpression_CustomerTier" typeRef="string">
+          <text>customerTier</text>
+        </inputExpression>
+      </input>
+
+      <input id="Input_CartValue" label="Cart Value" camunda:inputVariable="cartValue">
+        <inputExpression id="InputExpression_CartValue" typeRef="double">
+          <text>cartValue</text>
+        </inputExpression>
+      </input>
+
+      <input id="Input_PromoCode" label="Promo Code" camunda:inputVariable="promoCode">
+        <inputExpression id="InputExpression_PromoCode" typeRef="string">
+          <text>promoCode</text>
+        </inputExpression>
+      </input>
+
+      <output id="Output_DiscountPercent" label="Discount Percent" name="discountPercent" typeRef="integer" />
+
+      <rule id="Rule_PremiumTier">
+        <inputEntry id="InputEntry_Premium_Tier">
+          <text>"PREMIUM"</text>
+        </inputEntry>
+        <inputEntry id="InputEntry_Premium_Cart">
+          <text>-</text>
+        </inputEntry>
+        <inputEntry id="InputEntry_Premium_Promo">
+          <text>-</text>
+        </inputEntry>
+        <outputEntry id="OutputEntry_Premium_Discount">
+          <text>10</text>
+        </outputEntry>
+      </rule>
+
+      <rule id="Rule_HighCartValue">
+        <inputEntry id="InputEntry_HighCart_Tier">
+          <text>-</text>
+        </inputEntry>
+        <inputEntry id="InputEntry_HighCart_Cart">
+          <text>&gt;= 500</text>
+        </inputEntry>
+        <inputEntry id="InputEntry_HighCart_Promo">
+          <text>-</text>
+        </inputEntry>
+        <outputEntry id="OutputEntry_HighCart_Discount">
+          <text>5</text>
+        </outputEntry>
+      </rule>
+
+      <rule id="Rule_PromoCode">
+        <inputEntry id="InputEntry_Promo_Tier">
+          <text>-</text>
+        </inputEntry>
+        <inputEntry id="InputEntry_Promo_Cart">
+          <text>-</text>
+        </inputEntry>
+        <inputEntry id="InputEntry_Promo_Promo">
+          <text>"FESTIVE10","SPECIAL10"</text>
+        </inputEntry>
+        <outputEntry id="OutputEntry_Promo_Discount">
+          <text>10</text>
+        </outputEntry>
+      </rule>
+
+      <rule id="Rule_Default">
+        <inputEntry id="InputEntry_Default_Tier">
+          <text>-</text>
+        </inputEntry>
+        <inputEntry id="InputEntry_Default_Cart">
+          <text>-</text>
+        </inputEntry>
+        <inputEntry id="InputEntry_Default_Promo">
+          <text>-</text>
+        </inputEntry>
+        <outputEntry id="OutputEntry_Default_Discount">
+          <text>0</text>
+        </outputEntry>
+      </rule>
+
+    </decisionTable>
+  </decision>
+
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="DMNDiagram_CalculateDiscounts">
+      <dmndi:DMNShape id="DMNShape_calculate-discounts" dmnElementRef="calculate-discounts">
+        <dc:Bounds height="80" width="180" x="160" y="100" />
+      </dmndi:DMNShape>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+
+</definitions>
