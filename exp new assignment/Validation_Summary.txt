@@ -1,0 +1,9 @@
+PASS: Official OMG BPMN 2.0 XSD validation.
+PASS: Unique XML IDs and resolvable flow, boundary, event and called-process references.
+PASS: All flow nodes assigned to lanes.
+PASS: Exclusive gateway default/condition checks.
+PASS: Parallel split and join structure (alternative routes merge before synchronisation).
+PASS: Per-diagram reachability from start/boundary events or compensation handlers.
+PASS: All 26 failure detection mappings exist.
+PASS: Eight diagram pages and ten report pages rendered and visually reviewed.
+LIMIT: Descriptive BPMN model; no workflow engine execution test.

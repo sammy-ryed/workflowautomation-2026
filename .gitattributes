@@ -1,0 +1,4 @@
+*.pdf binary
+*.png binary
+*.bpmn text eol=lf
+*.svg text eol=lf

@@ -1,0 +1,3045 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_A1" targetNamespace="https://example.edu/project-approval" exporter="Assignment 1 model" exporterVersion="1.0">
+  <bpmn:error id="Error_Closed" name="Case must close" errorCode="CASE_CLOSED"/>
+  <bpmn:error id="Error_Tech" name="Technical operation failed" errorCode="TECH_FAILURE"/>
+  <bpmn:message id="Message_TeamWithdrawal" name="Team withdrawal request"/>
+  <bpmn:message id="Message_GuideWithdrawal" name="Guide withdrawal before final confirmation"/>
+  <bpmn:escalation id="Esc_Review" name="Review SLA breached" escalationCode="REVIEW_DELAY"/>
+  <bpmn:process id="Process_A1" name="Student Project Approval and Allocation" isExecutable="false">
+    <bpmn:laneSet id="Main_lanes">
+      <bpmn:lane id="Main_lane0" name="Student / Team">
+        <bpmn:flowNodeRef>Main_Start</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Main_lane1" name="Project Coordinator">
+        <bpmn:flowNodeRef>Main_Run</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Main_Closed</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Main_Notice</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Main_EndClosed</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Main_Withdraw</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Main_WithdrawAudit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Main_EndWithdraw</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Main_Esc</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Main_lane2" name="Review Committee / HoD">
+        <bpmn:flowNodeRef>Main_Expedite</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Main_EscEnd</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Main_lane3" name="Faculty Guide"/>
+      <bpmn:lane id="Main_lane4" name="Project Management System">
+        <bpmn:flowNodeRef>Main_Success</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Main_Close</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Main_Undo</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Main_Start" name="Team decides to submit">
+      <bpmn:outgoing>Main_flow1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:subProcess id="Main_Run" name="Run approval case&#10;(details: pages 2-8)">
+      <bpmn:incoming>Main_flow1</bpmn:incoming>
+      <bpmn:outgoing>Main_flow2</bpmn:outgoing>
+      <bpmn:laneSet id="Case_lanes">
+        <bpmn:lane id="Case_lane0" name="Student / Team">
+          <bpmn:flowNodeRef>Case_Submit</bpmn:flowNodeRef>
+        </bpmn:lane>
+        <bpmn:lane id="Case_lane1" name="Project Coordinator">
+          <bpmn:flowNodeRef>Case_Screen</bpmn:flowNodeRef>
+        </bpmn:lane>
+        <bpmn:lane id="Case_lane2" name="Review Committee / HoD">
+          <bpmn:flowNodeRef>Case_Review</bpmn:flowNodeRef>
+        </bpmn:lane>
+        <bpmn:lane id="Case_lane3" name="Faculty Guide"/>
+        <bpmn:lane id="Case_lane4" name="Project Management System">
+          <bpmn:flowNodeRef>Case_Start</bpmn:flowNodeRef>
+          <bpmn:flowNodeRef>Case_Validate</bpmn:flowNodeRef>
+          <bpmn:flowNodeRef>Case_Allocate</bpmn:flowNodeRef>
+          <bpmn:flowNodeRef>Case_Finalize</bpmn:flowNodeRef>
+          <bpmn:flowNodeRef>Case_End</bpmn:flowNodeRef>
+          <bpmn:flowNodeRef>Case_GuideWithdraw</bpmn:flowNodeRef>
+          <bpmn:flowNodeRef>Case_Release</bpmn:flowNodeRef>
+          <bpmn:flowNodeRef>Case_GuideWithdrawFinal</bpmn:flowNodeRef>
+          <bpmn:flowNodeRef>Case_Initialise</bpmn:flowNodeRef>
+        </bpmn:lane>
+      </bpmn:laneSet>
+      <bpmn:startEvent id="Case_Start" name="Case opened">
+        <bpmn:outgoing>Case_flow1</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:subProcess id="Case_Submit" name="Submit proposal">
+        <bpmn:incoming>Case_flow11</bpmn:incoming>
+        <bpmn:outgoing>Case_flow2</bpmn:outgoing>
+        <bpmn:laneSet id="Submit_lanes">
+          <bpmn:lane id="Submit_lane0" name="Student / Team">
+            <bpmn:flowNodeRef>Submit_Start</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Submit_Form</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Submit_Deadline</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Submit_LateForm</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Submit_Expired</bpmn:flowNodeRef>
+          </bpmn:lane>
+          <bpmn:lane id="Submit_lane1" name="Project Coordinator">
+            <bpmn:flowNodeRef>Submit_Late</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Submit_LateOK</bpmn:flowNodeRef>
+          </bpmn:lane>
+          <bpmn:lane id="Submit_lane2" name="Review Committee / HoD"/>
+          <bpmn:lane id="Submit_lane3" name="Faculty Guide"/>
+          <bpmn:lane id="Submit_lane4" name="Project Management System">
+            <bpmn:flowNodeRef>Submit_End</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Submit_Lapsed</bpmn:flowNodeRef>
+          </bpmn:lane>
+        </bpmn:laneSet>
+        <bpmn:startEvent id="Submit_Start" name="Ready to submit">
+          <bpmn:outgoing>Submit_flow1</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:userTask id="Submit_Form" name="Complete and submit&#10;proposal + abstract">
+          <bpmn:incoming>Submit_flow1</bpmn:incoming>
+          <bpmn:outgoing>Submit_flow2</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:endEvent id="Submit_End" name="Proposal received">
+          <bpmn:incoming>Submit_flow2</bpmn:incoming>
+          <bpmn:incoming>Submit_flow7</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="Submit_flow1" sourceRef="Submit_Start" targetRef="Submit_Form" name=""/>
+        <bpmn:sequenceFlow id="Submit_flow2" sourceRef="Submit_Form" targetRef="Submit_End" name=""/>
+        <bpmn:boundaryEvent id="Submit_Deadline" name="Submission deadline" attachedToRef="Submit_Form" cancelActivity="true">
+          <bpmn:outgoing>Submit_flow3</bpmn:outgoing>
+          <bpmn:timerEventDefinition>
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P14D</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:boundaryEvent>
+        <bpmn:userTask id="Submit_Late" name="Assess late request;&#10;set extended deadline">
+          <bpmn:incoming>Submit_flow3</bpmn:incoming>
+          <bpmn:outgoing>Submit_flow4</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:exclusiveGateway id="Submit_LateOK" name="Extension granted?" default="Submit_flow6">
+          <bpmn:incoming>Submit_flow4</bpmn:incoming>
+          <bpmn:outgoing>Submit_flow5</bpmn:outgoing>
+          <bpmn:outgoing>Submit_flow6</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:userTask id="Submit_LateForm" name="Submit during&#10;one 3-day extension">
+          <bpmn:incoming>Submit_flow5</bpmn:incoming>
+          <bpmn:outgoing>Submit_flow7</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:boundaryEvent id="Submit_Expired" name="Extension expired" attachedToRef="Submit_LateForm" cancelActivity="true">
+          <bpmn:outgoing>Submit_flow8</bpmn:outgoing>
+          <bpmn:timerEventDefinition>
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P3D</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:boundaryEvent>
+        <bpmn:endEvent id="Submit_Lapsed" name="Lapsed: no submission">
+          <bpmn:incoming>Submit_flow6</bpmn:incoming>
+          <bpmn:incoming>Submit_flow8</bpmn:incoming>
+          <bpmn:errorEventDefinition errorRef="Error_Closed"/>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="Submit_flow3" sourceRef="Submit_Deadline" targetRef="Submit_Late" name=""/>
+        <bpmn:sequenceFlow id="Submit_flow4" sourceRef="Submit_Late" targetRef="Submit_LateOK" name=""/>
+        <bpmn:sequenceFlow id="Submit_flow5" sourceRef="Submit_LateOK" targetRef="Submit_LateForm" name="Yes">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">extensionGranted</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Submit_flow6" sourceRef="Submit_LateOK" targetRef="Submit_Lapsed" name="No"/>
+        <bpmn:sequenceFlow id="Submit_flow7" sourceRef="Submit_LateForm" targetRef="Submit_End" name=""/>
+        <bpmn:sequenceFlow id="Submit_flow8" sourceRef="Submit_Expired" targetRef="Submit_Lapsed" name=""/>
+      </bpmn:subProcess>
+      <bpmn:callActivity id="Case_Validate" name="Validate proposal" calledElement="Process_Validate">
+        <bpmn:incoming>Case_flow2</bpmn:incoming>
+        <bpmn:outgoing>Case_flow3</bpmn:outgoing>
+      </bpmn:callActivity>
+      <bpmn:callActivity id="Case_Screen" name="Screen and check similarity" calledElement="Process_Screen">
+        <bpmn:incoming>Case_flow3</bpmn:incoming>
+        <bpmn:outgoing>Case_flow4</bpmn:outgoing>
+      </bpmn:callActivity>
+      <bpmn:subProcess id="Case_Review" name="Committee review">
+        <bpmn:incoming>Case_flow4</bpmn:incoming>
+        <bpmn:outgoing>Case_flow5</bpmn:outgoing>
+        <bpmn:laneSet id="Review_lanes">
+          <bpmn:lane id="Review_lane0" name="Student / Team">
+            <bpmn:flowNodeRef>Review_Revise</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_RevDue</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_NewTopic</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_NewDue</bpmn:flowNodeRef>
+          </bpmn:lane>
+          <bpmn:lane id="Review_lane1" name="Project Coordinator">
+            <bpmn:flowNodeRef>Review_NewAllowed</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_Remind</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_RemEnd</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_Rescreen</bpmn:flowNodeRef>
+          </bpmn:lane>
+          <bpmn:lane id="Review_lane2" name="Review Committee / HoD">
+            <bpmn:flowNodeRef>Review_Start</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_Review</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_Decision</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_End</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_RevLimit</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_FinalDecision</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_FinalOK</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_Reminder</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_Escalate</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_ThrowEsc</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_EscEnd</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_HardDue</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_FinalDue</bpmn:flowNodeRef>
+          </bpmn:lane>
+          <bpmn:lane id="Review_lane3" name="Faculty Guide"/>
+          <bpmn:lane id="Review_lane4" name="Project Management System">
+            <bpmn:flowNodeRef>Review_Closed</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Review_Revalidate</bpmn:flowNodeRef>
+          </bpmn:lane>
+        </bpmn:laneSet>
+        <bpmn:startEvent id="Review_Start" name="Screened proposal">
+          <bpmn:outgoing>Review_flow1</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:userTask id="Review_Review" name="Evaluate proposal; record&#10;quorum, conflicts and reasons">
+          <bpmn:incoming>Review_flow1</bpmn:incoming>
+          <bpmn:incoming>Review_flow24</bpmn:incoming>
+          <bpmn:outgoing>Review_flow2</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:exclusiveGateway id="Review_Decision" name="Decision?" default="Review_flow5">
+          <bpmn:incoming>Review_flow2</bpmn:incoming>
+          <bpmn:outgoing>Review_flow3</bpmn:outgoing>
+          <bpmn:outgoing>Review_flow4</bpmn:outgoing>
+          <bpmn:outgoing>Review_flow5</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:endEvent id="Review_End" name="Approved">
+          <bpmn:incoming>Review_flow3</bpmn:incoming>
+          <bpmn:incoming>Review_flow11</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="Review_flow1" sourceRef="Review_Start" targetRef="Review_Review" name=""/>
+        <bpmn:sequenceFlow id="Review_flow2" sourceRef="Review_Review" targetRef="Review_Decision" name=""/>
+        <bpmn:sequenceFlow id="Review_flow3" sourceRef="Review_Decision" targetRef="Review_End" name="Approve">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">decision == approve</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:exclusiveGateway id="Review_RevLimit" name="Revision cycles &lt; 2?" default="Review_flow7">
+          <bpmn:incoming>Review_flow4</bpmn:incoming>
+          <bpmn:outgoing>Review_flow6</bpmn:outgoing>
+          <bpmn:outgoing>Review_flow7</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:userTask id="Review_Revise" name="Revise proposal;&#10;revision count +1">
+          <bpmn:incoming>Review_flow6</bpmn:incoming>
+          <bpmn:outgoing>Review_flow8</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:boundaryEvent id="Review_RevDue" name="7 days" attachedToRef="Review_Revise" cancelActivity="true">
+          <bpmn:outgoing>Review_flow9</bpmn:outgoing>
+          <bpmn:timerEventDefinition>
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P7D</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:boundaryEvent>
+        <bpmn:userTask id="Review_FinalDecision" name="Committee final decision&#10;(approve or reject only)">
+          <bpmn:incoming>Review_flow7</bpmn:incoming>
+          <bpmn:outgoing>Review_flow10</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:exclusiveGateway id="Review_FinalOK" name="Approved?" default="Review_flow12">
+          <bpmn:incoming>Review_flow10</bpmn:incoming>
+          <bpmn:outgoing>Review_flow11</bpmn:outgoing>
+          <bpmn:outgoing>Review_flow12</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:exclusiveGateway id="Review_NewAllowed" name="New topic used &lt; 1?" default="Review_flow14">
+          <bpmn:incoming>Review_flow5</bpmn:incoming>
+          <bpmn:incoming>Review_flow12</bpmn:incoming>
+          <bpmn:outgoing>Review_flow13</bpmn:outgoing>
+          <bpmn:outgoing>Review_flow14</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:userTask id="Review_NewTopic" name="Submit one new topic;&#10;newTopicUsed = 1">
+          <bpmn:incoming>Review_flow13</bpmn:incoming>
+          <bpmn:outgoing>Review_flow15</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:boundaryEvent id="Review_NewDue" name="7 days" attachedToRef="Review_NewTopic" cancelActivity="true">
+          <bpmn:outgoing>Review_flow16</bpmn:outgoing>
+          <bpmn:timerEventDefinition>
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P7D</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:boundaryEvent>
+        <bpmn:endEvent id="Review_Closed" name="Rejected / lapsed:&#10;review not completed">
+          <bpmn:incoming>Review_flow9</bpmn:incoming>
+          <bpmn:incoming>Review_flow14</bpmn:incoming>
+          <bpmn:incoming>Review_flow16</bpmn:incoming>
+          <bpmn:incoming>Review_flow21</bpmn:incoming>
+          <bpmn:incoming>Review_flow22</bpmn:incoming>
+          <bpmn:errorEventDefinition errorRef="Error_Closed"/>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="Review_flow4" sourceRef="Review_Decision" targetRef="Review_RevLimit" name="Revise">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">decision == revise</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Review_flow5" sourceRef="Review_Decision" targetRef="Review_NewAllowed" name="Reject"/>
+        <bpmn:sequenceFlow id="Review_flow6" sourceRef="Review_RevLimit" targetRef="Review_Revise" name="Yes">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">revisionCycles &lt; 2</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Review_flow7" sourceRef="Review_RevLimit" targetRef="Review_FinalDecision" name="No"/>
+        <bpmn:sequenceFlow id="Review_flow8" sourceRef="Review_Revise" targetRef="Review_Revalidate" name="Changed proposal"/>
+        <bpmn:sequenceFlow id="Review_flow9" sourceRef="Review_RevDue" targetRef="Review_Closed" name=""/>
+        <bpmn:sequenceFlow id="Review_flow10" sourceRef="Review_FinalDecision" targetRef="Review_FinalOK" name=""/>
+        <bpmn:sequenceFlow id="Review_flow11" sourceRef="Review_FinalOK" targetRef="Review_End" name="Yes">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">approved</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Review_flow12" sourceRef="Review_FinalOK" targetRef="Review_NewAllowed" name="No"/>
+        <bpmn:sequenceFlow id="Review_flow13" sourceRef="Review_NewAllowed" targetRef="Review_NewTopic" name="Yes">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">newTopicUsed &lt; 1</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Review_flow14" sourceRef="Review_NewAllowed" targetRef="Review_Closed" name="No"/>
+        <bpmn:sequenceFlow id="Review_flow15" sourceRef="Review_NewTopic" targetRef="Review_Revalidate" name="Changed proposal"/>
+        <bpmn:sequenceFlow id="Review_flow16" sourceRef="Review_NewDue" targetRef="Review_Closed" name=""/>
+        <bpmn:boundaryEvent id="Review_Reminder" name="3-day reminder" attachedToRef="Review_Review" cancelActivity="false">
+          <bpmn:outgoing>Review_flow17</bpmn:outgoing>
+          <bpmn:timerEventDefinition>
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P3D</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:boundaryEvent>
+        <bpmn:userTask id="Review_Remind" name="Send reviewer reminder&#10;(portal fallback)">
+          <bpmn:incoming>Review_flow17</bpmn:incoming>
+          <bpmn:outgoing>Review_flow18</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:endEvent id="Review_RemEnd" name="Reminder sent">
+          <bpmn:incoming>Review_flow18</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="Review_flow17" sourceRef="Review_Reminder" targetRef="Review_Remind" name=""/>
+        <bpmn:sequenceFlow id="Review_flow18" sourceRef="Review_Remind" targetRef="Review_RemEnd" name=""/>
+        <bpmn:boundaryEvent id="Review_Escalate" name="5-day escalation" attachedToRef="Review_Review" cancelActivity="false">
+          <bpmn:outgoing>Review_flow19</bpmn:outgoing>
+          <bpmn:timerEventDefinition>
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:boundaryEvent>
+        <bpmn:intermediateThrowEvent id="Review_ThrowEsc" name="Raise review escalation">
+          <bpmn:incoming>Review_flow19</bpmn:incoming>
+          <bpmn:outgoing>Review_flow20</bpmn:outgoing>
+          <bpmn:escalationEventDefinition escalationRef="Esc_Review"/>
+        </bpmn:intermediateThrowEvent>
+        <bpmn:endEvent id="Review_EscEnd" name="Review remains active">
+          <bpmn:incoming>Review_flow20</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="Review_flow19" sourceRef="Review_Escalate" targetRef="Review_ThrowEsc" name=""/>
+        <bpmn:sequenceFlow id="Review_flow20" sourceRef="Review_ThrowEsc" targetRef="Review_EscEnd" name=""/>
+        <bpmn:boundaryEvent id="Review_HardDue" name="10-day hard limit" attachedToRef="Review_Review" cancelActivity="true">
+          <bpmn:outgoing>Review_flow21</bpmn:outgoing>
+          <bpmn:timerEventDefinition>
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P10D</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:boundaryEvent>
+        <bpmn:sequenceFlow id="Review_flow21" sourceRef="Review_HardDue" targetRef="Review_Closed" name=""/>
+        <bpmn:boundaryEvent id="Review_FinalDue" name="5 days" attachedToRef="Review_FinalDecision" cancelActivity="true">
+          <bpmn:outgoing>Review_flow22</bpmn:outgoing>
+          <bpmn:timerEventDefinition>
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P5D</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:boundaryEvent>
+        <bpmn:sequenceFlow id="Review_flow22" sourceRef="Review_FinalDue" targetRef="Review_Closed" name=""/>
+        <bpmn:callActivity id="Review_Revalidate" name="Revalidate changed proposal" calledElement="Process_Validate">
+          <bpmn:incoming>Review_flow8</bpmn:incoming>
+          <bpmn:incoming>Review_flow15</bpmn:incoming>
+          <bpmn:outgoing>Review_flow23</bpmn:outgoing>
+        </bpmn:callActivity>
+        <bpmn:callActivity id="Review_Rescreen" name="Rescreen + similarity check" calledElement="Process_Screen">
+          <bpmn:incoming>Review_flow23</bpmn:incoming>
+          <bpmn:outgoing>Review_flow24</bpmn:outgoing>
+        </bpmn:callActivity>
+        <bpmn:sequenceFlow id="Review_flow23" sourceRef="Review_Revalidate" targetRef="Review_Rescreen" name=""/>
+        <bpmn:sequenceFlow id="Review_flow24" sourceRef="Review_Rescreen" targetRef="Review_Review" name="Rechecked proposal"/>
+      </bpmn:subProcess>
+      <bpmn:subProcess id="Case_Allocate" name="Allocate and confirm guide">
+        <bpmn:incoming>Case_flow5</bpmn:incoming>
+        <bpmn:incoming>Case_flow9</bpmn:incoming>
+        <bpmn:outgoing>Case_flow6</bpmn:outgoing>
+        <bpmn:laneSet id="Allocate_lanes">
+          <bpmn:lane id="Allocate_lane0" name="Student / Team"/>
+          <bpmn:lane id="Allocate_lane1" name="Project Coordinator">
+            <bpmn:flowNodeRef>Allocate_Manual</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_WaitDue</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_Selected</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_Release</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_Reconcile</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_Contact</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_ManualAcceptDue</bpmn:flowNodeRef>
+          </bpmn:lane>
+          <bpmn:lane id="Allocate_lane2" name="Review Committee / HoD"/>
+          <bpmn:lane id="Allocate_lane3" name="Faculty Guide">
+            <bpmn:flowNodeRef>Allocate_Accept</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_NoReply</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_Accepted</bpmn:flowNodeRef>
+          </bpmn:lane>
+          <bpmn:lane id="Allocate_lane4" name="Project Management System">
+            <bpmn:flowNodeRef>Allocate_Start</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_Rule</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_Available</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_Lapsed</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_Reserve</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_Send</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_End</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_Undo</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_Exclude</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_Comp</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_RuleError</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_Conflict</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Allocate_SendError</bpmn:flowNodeRef>
+          </bpmn:lane>
+        </bpmn:laneSet>
+        <bpmn:startEvent id="Allocate_Start" name="Approved proposal">
+          <bpmn:outgoing>Allocate_flow1</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:businessRuleTask id="Allocate_Rule" name="Rank domain-matched guides&#10;by capacity and conflicts">
+          <bpmn:incoming>Allocate_flow1</bpmn:incoming>
+          <bpmn:incoming>Allocate_flow16</bpmn:incoming>
+          <bpmn:incoming>Allocate_flow19</bpmn:incoming>
+          <bpmn:outgoing>Allocate_flow2</bpmn:outgoing>
+        </bpmn:businessRuleTask>
+        <bpmn:exclusiveGateway id="Allocate_Available" name="Candidate available&#10;and attempts &lt; 3?" default="Allocate_flow4">
+          <bpmn:incoming>Allocate_flow2</bpmn:incoming>
+          <bpmn:outgoing>Allocate_flow3</bpmn:outgoing>
+          <bpmn:outgoing>Allocate_flow4</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:userTask id="Allocate_Manual" name="Choose co-guide / external&#10;guide or waitlist (14 days)">
+          <bpmn:incoming>Allocate_flow4</bpmn:incoming>
+          <bpmn:incoming>Allocate_flow17</bpmn:incoming>
+          <bpmn:outgoing>Allocate_flow5</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:boundaryEvent id="Allocate_WaitDue" name="14 days" attachedToRef="Allocate_Manual" cancelActivity="true">
+          <bpmn:outgoing>Allocate_flow8</bpmn:outgoing>
+          <bpmn:timerEventDefinition>
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P14D</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:boundaryEvent>
+        <bpmn:exclusiveGateway id="Allocate_Selected" name="Guide found?" default="Allocate_flow7">
+          <bpmn:incoming>Allocate_flow5</bpmn:incoming>
+          <bpmn:outgoing>Allocate_flow6</bpmn:outgoing>
+          <bpmn:outgoing>Allocate_flow7</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:endEvent id="Allocate_Lapsed" name="Lapsed: no guide">
+          <bpmn:incoming>Allocate_flow7</bpmn:incoming>
+          <bpmn:incoming>Allocate_flow8</bpmn:incoming>
+          <bpmn:errorEventDefinition errorRef="Error_Closed"/>
+        </bpmn:endEvent>
+        <bpmn:serviceTask id="Allocate_Reserve" name="Atomically reserve slot&#10;(case-key idempotent)">
+          <bpmn:incoming>Allocate_flow3</bpmn:incoming>
+          <bpmn:incoming>Allocate_flow6</bpmn:incoming>
+          <bpmn:outgoing>Allocate_flow9</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:sendTask id="Allocate_Send" name="Send allocation request&#10;(portal durable outbox)">
+          <bpmn:incoming>Allocate_flow9</bpmn:incoming>
+          <bpmn:outgoing>Allocate_flow10</bpmn:outgoing>
+        </bpmn:sendTask>
+        <bpmn:userTask id="Allocate_Accept" name="Guide accepts or declines;&#10;record formal response">
+          <bpmn:incoming>Allocate_flow10</bpmn:incoming>
+          <bpmn:incoming>Allocate_flow21</bpmn:incoming>
+          <bpmn:outgoing>Allocate_flow11</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:boundaryEvent id="Allocate_NoReply" name="3 days" attachedToRef="Allocate_Accept" cancelActivity="true">
+          <bpmn:outgoing>Allocate_flow14</bpmn:outgoing>
+          <bpmn:timerEventDefinition>
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P3D</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:boundaryEvent>
+        <bpmn:exclusiveGateway id="Allocate_Accepted" name="Accepted?" default="Allocate_flow13">
+          <bpmn:incoming>Allocate_flow11</bpmn:incoming>
+          <bpmn:outgoing>Allocate_flow12</bpmn:outgoing>
+          <bpmn:outgoing>Allocate_flow13</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:endEvent id="Allocate_End" name="Guide accepted;&#10;hold retained">
+          <bpmn:incoming>Allocate_flow12</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:intermediateThrowEvent id="Allocate_Undo" name="Compensate reservation">
+          <bpmn:incoming>Allocate_flow13</bpmn:incoming>
+          <bpmn:incoming>Allocate_flow14</bpmn:incoming>
+          <bpmn:incoming>Allocate_flow22</bpmn:incoming>
+          <bpmn:outgoing>Allocate_flow15</bpmn:outgoing>
+          <bpmn:compensateEventDefinition activityRef="Allocate_Reserve"/>
+        </bpmn:intermediateThrowEvent>
+        <bpmn:serviceTask id="Allocate_Exclude" name="Exclude guide; increment&#10;attempts; clear request">
+          <bpmn:incoming>Allocate_flow15</bpmn:incoming>
+          <bpmn:outgoing>Allocate_flow16</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:boundaryEvent id="Allocate_Comp" name="Compensation handler" attachedToRef="Allocate_Reserve" cancelActivity="true">
+          <bpmn:compensateEventDefinition/>
+        </bpmn:boundaryEvent>
+        <bpmn:serviceTask id="Allocate_Release" name="Release reserved slot&#10;(idempotent)" isForCompensation="true"/>
+        <bpmn:sequenceFlow id="Allocate_flow1" sourceRef="Allocate_Start" targetRef="Allocate_Rule" name=""/>
+        <bpmn:sequenceFlow id="Allocate_flow2" sourceRef="Allocate_Rule" targetRef="Allocate_Available" name=""/>
+        <bpmn:sequenceFlow id="Allocate_flow3" sourceRef="Allocate_Available" targetRef="Allocate_Reserve" name="Yes">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">candidateExists and guideAttempts &lt; 3</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Allocate_flow4" sourceRef="Allocate_Available" targetRef="Allocate_Manual" name="No"/>
+        <bpmn:sequenceFlow id="Allocate_flow5" sourceRef="Allocate_Manual" targetRef="Allocate_Selected" name=""/>
+        <bpmn:sequenceFlow id="Allocate_flow6" sourceRef="Allocate_Selected" targetRef="Allocate_Reserve" name="Yes">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">manualGuideFound</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Allocate_flow7" sourceRef="Allocate_Selected" targetRef="Allocate_Lapsed" name="No"/>
+        <bpmn:sequenceFlow id="Allocate_flow8" sourceRef="Allocate_WaitDue" targetRef="Allocate_Lapsed" name=""/>
+        <bpmn:sequenceFlow id="Allocate_flow9" sourceRef="Allocate_Reserve" targetRef="Allocate_Send" name=""/>
+        <bpmn:sequenceFlow id="Allocate_flow10" sourceRef="Allocate_Send" targetRef="Allocate_Accept" name=""/>
+        <bpmn:sequenceFlow id="Allocate_flow11" sourceRef="Allocate_Accept" targetRef="Allocate_Accepted" name=""/>
+        <bpmn:sequenceFlow id="Allocate_flow12" sourceRef="Allocate_Accepted" targetRef="Allocate_End" name="Yes">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">guideAccepted</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Allocate_flow13" sourceRef="Allocate_Accepted" targetRef="Allocate_Undo" name="No"/>
+        <bpmn:sequenceFlow id="Allocate_flow14" sourceRef="Allocate_NoReply" targetRef="Allocate_Undo" name=""/>
+        <bpmn:sequenceFlow id="Allocate_flow15" sourceRef="Allocate_Undo" targetRef="Allocate_Exclude" name=""/>
+        <bpmn:sequenceFlow id="Allocate_flow16" sourceRef="Allocate_Exclude" targetRef="Allocate_Rule" name="Next candidate"/>
+        <bpmn:boundaryEvent id="Allocate_RuleError" name="Rule service failed" attachedToRef="Allocate_Rule" cancelActivity="true">
+          <bpmn:outgoing>Allocate_flow17</bpmn:outgoing>
+          <bpmn:errorEventDefinition errorRef="Error_Tech"/>
+        </bpmn:boundaryEvent>
+        <bpmn:sequenceFlow id="Allocate_flow17" sourceRef="Allocate_RuleError" targetRef="Allocate_Manual" name=""/>
+        <bpmn:boundaryEvent id="Allocate_Conflict" name="Capacity race / DB error" attachedToRef="Allocate_Reserve" cancelActivity="true">
+          <bpmn:outgoing>Allocate_flow18</bpmn:outgoing>
+          <bpmn:errorEventDefinition errorRef="Error_Tech"/>
+        </bpmn:boundaryEvent>
+        <bpmn:userTask id="Allocate_Reconcile" name="Reconcile uncertain hold;&#10;release if present; attempts +1">
+          <bpmn:incoming>Allocate_flow18</bpmn:incoming>
+          <bpmn:outgoing>Allocate_flow19</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:sequenceFlow id="Allocate_flow18" sourceRef="Allocate_Conflict" targetRef="Allocate_Reconcile" name=""/>
+        <bpmn:sequenceFlow id="Allocate_flow19" sourceRef="Allocate_Reconcile" targetRef="Allocate_Rule" name="Recheck"/>
+        <bpmn:boundaryEvent id="Allocate_SendError" name="Delivery error" attachedToRef="Allocate_Send" cancelActivity="true">
+          <bpmn:outgoing>Allocate_flow20</bpmn:outgoing>
+          <bpmn:errorEventDefinition errorRef="Error_Tech"/>
+        </bpmn:boundaryEvent>
+        <bpmn:userTask id="Allocate_Contact" name="Coordinator contacts guide;&#10;logs request in portal">
+          <bpmn:incoming>Allocate_flow20</bpmn:incoming>
+          <bpmn:outgoing>Allocate_flow21</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:sequenceFlow id="Allocate_flow20" sourceRef="Allocate_SendError" targetRef="Allocate_Contact" name=""/>
+        <bpmn:sequenceFlow id="Allocate_flow21" sourceRef="Allocate_Contact" targetRef="Allocate_Accept" name=""/>
+        <bpmn:boundaryEvent id="Allocate_ManualAcceptDue" name="3 days" attachedToRef="Allocate_Contact" cancelActivity="true">
+          <bpmn:outgoing>Allocate_flow22</bpmn:outgoing>
+          <bpmn:timerEventDefinition>
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P3D</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:boundaryEvent>
+        <bpmn:sequenceFlow id="Allocate_flow22" sourceRef="Allocate_ManualAcceptDue" targetRef="Allocate_Undo" name=""/>
+        <bpmn:association id="Allocate_assoc0" sourceRef="Allocate_Comp" targetRef="Allocate_Release" associationDirection="One"/>
+      </bpmn:subProcess>
+      <bpmn:subProcess id="Case_Finalize" name="Record and notify">
+        <bpmn:incoming>Case_flow6</bpmn:incoming>
+        <bpmn:outgoing>Case_flow7</bpmn:outgoing>
+        <bpmn:laneSet id="Finalize_lanes">
+          <bpmn:lane id="Finalize_lane0" name="Student / Team">
+            <bpmn:flowNodeRef>Finalize_NoticeWait</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_Lapsed</bpmn:flowNodeRef>
+          </bpmn:lane>
+          <bpmn:lane id="Finalize_lane1" name="Project Coordinator">
+            <bpmn:flowNodeRef>Finalize_Retry</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_Wait</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_ManualRecord</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_NoticeRetry</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_ManualNotify</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_ManualArchive</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_ContactDue</bpmn:flowNodeRef>
+          </bpmn:lane>
+          <bpmn:lane id="Finalize_lane2" name="Review Committee / HoD"/>
+          <bpmn:lane id="Finalize_lane3" name="Faculty Guide"/>
+          <bpmn:lane id="Finalize_lane4" name="Project Management System">
+            <bpmn:flowNodeRef>Finalize_Start</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_Record</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_Split</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_Notify</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_Archive</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_Join</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_End</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_DBError</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_NotifyError</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_ArchiveError</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_Release</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_RecordMerge</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_NoticeMerge</bpmn:flowNodeRef>
+            <bpmn:flowNodeRef>Finalize_ArchiveMerge</bpmn:flowNodeRef>
+          </bpmn:lane>
+        </bpmn:laneSet>
+        <bpmn:startEvent id="Finalize_Start" name="Guide accepted">
+          <bpmn:outgoing>Finalize_flow1</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:serviceTask id="Finalize_Record" name="Commit confirmed allocation&#10;and audit (idempotent)">
+          <bpmn:incoming>Finalize_flow1</bpmn:incoming>
+          <bpmn:incoming>Finalize_flow10</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow2</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:parallelGateway id="Finalize_Split" name="Both required">
+          <bpmn:incoming>Finalize_flow22</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow3</bpmn:outgoing>
+          <bpmn:outgoing>Finalize_flow4</bpmn:outgoing>
+        </bpmn:parallelGateway>
+        <bpmn:sendTask id="Finalize_Notify" name="Notify student;&#10;log delivery evidence">
+          <bpmn:incoming>Finalize_flow3</bpmn:incoming>
+          <bpmn:incoming>Finalize_flow15</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow5</bpmn:outgoing>
+        </bpmn:sendTask>
+        <bpmn:serviceTask id="Finalize_Archive" name="Archive approved proposal&#10;and acceptance evidence">
+          <bpmn:incoming>Finalize_flow4</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow6</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:parallelGateway id="Finalize_Join" name="Both complete">
+          <bpmn:incoming>Finalize_flow23</bpmn:incoming>
+          <bpmn:incoming>Finalize_flow24</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow7</bpmn:outgoing>
+        </bpmn:parallelGateway>
+        <bpmn:endEvent id="Finalize_End" name="Recorded and notified">
+          <bpmn:incoming>Finalize_flow7</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:sequenceFlow id="Finalize_flow1" sourceRef="Finalize_Start" targetRef="Finalize_Record" name=""/>
+        <bpmn:sequenceFlow id="Finalize_flow2" sourceRef="Finalize_Record" targetRef="Finalize_RecordMerge" name=""/>
+        <bpmn:sequenceFlow id="Finalize_flow3" sourceRef="Finalize_Split" targetRef="Finalize_Notify" name=""/>
+        <bpmn:sequenceFlow id="Finalize_flow4" sourceRef="Finalize_Split" targetRef="Finalize_Archive" name=""/>
+        <bpmn:sequenceFlow id="Finalize_flow5" sourceRef="Finalize_Notify" targetRef="Finalize_NoticeMerge" name=""/>
+        <bpmn:sequenceFlow id="Finalize_flow6" sourceRef="Finalize_Archive" targetRef="Finalize_ArchiveMerge" name=""/>
+        <bpmn:sequenceFlow id="Finalize_flow7" sourceRef="Finalize_Join" targetRef="Finalize_End" name=""/>
+        <bpmn:boundaryEvent id="Finalize_DBError" name="Database error" attachedToRef="Finalize_Record" cancelActivity="true">
+          <bpmn:outgoing>Finalize_flow8</bpmn:outgoing>
+          <bpmn:errorEventDefinition errorRef="Error_Tech"/>
+        </bpmn:boundaryEvent>
+        <bpmn:exclusiveGateway id="Finalize_Retry" name="DB attempts &lt; 3?&#10;increment on error" default="Finalize_flow11">
+          <bpmn:incoming>Finalize_flow8</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow9</bpmn:outgoing>
+          <bpmn:outgoing>Finalize_flow11</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:intermediateCatchEvent id="Finalize_Wait" name="Wait 5 minutes">
+          <bpmn:incoming>Finalize_flow9</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow10</bpmn:outgoing>
+          <bpmn:timerEventDefinition>
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT5M</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:intermediateCatchEvent>
+        <bpmn:userTask id="Finalize_ManualRecord" name="Commit signed allocation&#10;in controlled manual register">
+          <bpmn:incoming>Finalize_flow11</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow12</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:sequenceFlow id="Finalize_flow8" sourceRef="Finalize_DBError" targetRef="Finalize_Retry" name=""/>
+        <bpmn:sequenceFlow id="Finalize_flow9" sourceRef="Finalize_Retry" targetRef="Finalize_Wait" name="Yes">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">dbAttempts &lt; 3</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Finalize_flow10" sourceRef="Finalize_Wait" targetRef="Finalize_Record" name="Retry"/>
+        <bpmn:sequenceFlow id="Finalize_flow11" sourceRef="Finalize_Retry" targetRef="Finalize_ManualRecord" name="No"/>
+        <bpmn:sequenceFlow id="Finalize_flow12" sourceRef="Finalize_ManualRecord" targetRef="Finalize_RecordMerge" name=""/>
+        <bpmn:boundaryEvent id="Finalize_NotifyError" name="Delivery failure" attachedToRef="Finalize_Notify" cancelActivity="true">
+          <bpmn:outgoing>Finalize_flow13</bpmn:outgoing>
+          <bpmn:errorEventDefinition errorRef="Error_Tech"/>
+        </bpmn:boundaryEvent>
+        <bpmn:exclusiveGateway id="Finalize_NoticeRetry" name="Notice attempts &lt; 3?&#10;increment on error" default="Finalize_flow16">
+          <bpmn:incoming>Finalize_flow13</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow14</bpmn:outgoing>
+          <bpmn:outgoing>Finalize_flow16</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:userTask id="Finalize_ManualNotify" name="Notify via verified phone /&#10;portal; log receipt">
+          <bpmn:incoming>Finalize_flow16</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow17</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:intermediateCatchEvent id="Finalize_NoticeWait" name="Wait 5 minutes">
+          <bpmn:incoming>Finalize_flow14</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow15</bpmn:outgoing>
+          <bpmn:timerEventDefinition>
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT5M</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:intermediateCatchEvent>
+        <bpmn:sequenceFlow id="Finalize_flow13" sourceRef="Finalize_NotifyError" targetRef="Finalize_NoticeRetry" name=""/>
+        <bpmn:sequenceFlow id="Finalize_flow14" sourceRef="Finalize_NoticeRetry" targetRef="Finalize_NoticeWait" name="Yes">
+          <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">noticeAttempts &lt; 3</bpmn:conditionExpression>
+        </bpmn:sequenceFlow>
+        <bpmn:sequenceFlow id="Finalize_flow15" sourceRef="Finalize_NoticeWait" targetRef="Finalize_Notify" name="Retry"/>
+        <bpmn:sequenceFlow id="Finalize_flow16" sourceRef="Finalize_NoticeRetry" targetRef="Finalize_ManualNotify" name="No"/>
+        <bpmn:sequenceFlow id="Finalize_flow17" sourceRef="Finalize_ManualNotify" targetRef="Finalize_NoticeMerge" name=""/>
+        <bpmn:boundaryEvent id="Finalize_ArchiveError" name="Archive failure" attachedToRef="Finalize_Archive" cancelActivity="true">
+          <bpmn:outgoing>Finalize_flow18</bpmn:outgoing>
+          <bpmn:errorEventDefinition errorRef="Error_Tech"/>
+        </bpmn:boundaryEvent>
+        <bpmn:userTask id="Finalize_ManualArchive" name="Save signed evidence&#10;to controlled register">
+          <bpmn:incoming>Finalize_flow18</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow19</bpmn:outgoing>
+        </bpmn:userTask>
+        <bpmn:sequenceFlow id="Finalize_flow18" sourceRef="Finalize_ArchiveError" targetRef="Finalize_ManualArchive" name=""/>
+        <bpmn:sequenceFlow id="Finalize_flow19" sourceRef="Finalize_ManualArchive" targetRef="Finalize_ArchiveMerge" name=""/>
+        <bpmn:boundaryEvent id="Finalize_ContactDue" name="7 days: unreachable" attachedToRef="Finalize_ManualNotify" cancelActivity="true">
+          <bpmn:outgoing>Finalize_flow20</bpmn:outgoing>
+          <bpmn:timerEventDefinition>
+            <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P7D</bpmn:timeDuration>
+          </bpmn:timerEventDefinition>
+        </bpmn:boundaryEvent>
+        <bpmn:endEvent id="Finalize_Lapsed" name="Lapsed: notification&#10;not completed">
+          <bpmn:incoming>Finalize_flow21</bpmn:incoming>
+          <bpmn:errorEventDefinition errorRef="Error_Closed"/>
+        </bpmn:endEvent>
+        <bpmn:serviceTask id="Finalize_Release" name="Release guide hold;&#10;void confirmed record">
+          <bpmn:incoming>Finalize_flow20</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow21</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:sequenceFlow id="Finalize_flow20" sourceRef="Finalize_ContactDue" targetRef="Finalize_Release" name=""/>
+        <bpmn:sequenceFlow id="Finalize_flow21" sourceRef="Finalize_Release" targetRef="Finalize_Lapsed" name=""/>
+        <bpmn:exclusiveGateway id="Finalize_RecordMerge" name="Recorded">
+          <bpmn:incoming>Finalize_flow2</bpmn:incoming>
+          <bpmn:incoming>Finalize_flow12</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow22</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:exclusiveGateway id="Finalize_NoticeMerge" name="Notified">
+          <bpmn:incoming>Finalize_flow5</bpmn:incoming>
+          <bpmn:incoming>Finalize_flow17</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow23</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:exclusiveGateway id="Finalize_ArchiveMerge" name="Archived">
+          <bpmn:incoming>Finalize_flow6</bpmn:incoming>
+          <bpmn:incoming>Finalize_flow19</bpmn:incoming>
+          <bpmn:outgoing>Finalize_flow24</bpmn:outgoing>
+        </bpmn:exclusiveGateway>
+        <bpmn:sequenceFlow id="Finalize_flow22" sourceRef="Finalize_RecordMerge" targetRef="Finalize_Split" name=""/>
+        <bpmn:sequenceFlow id="Finalize_flow23" sourceRef="Finalize_NoticeMerge" targetRef="Finalize_Join" name=""/>
+        <bpmn:sequenceFlow id="Finalize_flow24" sourceRef="Finalize_ArchiveMerge" targetRef="Finalize_Join" name=""/>
+      </bpmn:subProcess>
+      <bpmn:endEvent id="Case_End" name="Case completed">
+        <bpmn:incoming>Case_flow7</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Case_flow1" sourceRef="Case_Start" targetRef="Case_Initialise" name=""/>
+      <bpmn:sequenceFlow id="Case_flow2" sourceRef="Case_Submit" targetRef="Case_Validate" name=""/>
+      <bpmn:sequenceFlow id="Case_flow3" sourceRef="Case_Validate" targetRef="Case_Screen" name=""/>
+      <bpmn:sequenceFlow id="Case_flow4" sourceRef="Case_Screen" targetRef="Case_Review" name=""/>
+      <bpmn:sequenceFlow id="Case_flow5" sourceRef="Case_Review" targetRef="Case_Allocate" name=""/>
+      <bpmn:sequenceFlow id="Case_flow6" sourceRef="Case_Allocate" targetRef="Case_Finalize" name=""/>
+      <bpmn:sequenceFlow id="Case_flow7" sourceRef="Case_Finalize" targetRef="Case_End" name=""/>
+      <bpmn:boundaryEvent id="Case_GuideWithdraw" name="Guide withdraws" attachedToRef="Case_Allocate" cancelActivity="true">
+        <bpmn:outgoing>Case_flow8</bpmn:outgoing>
+        <bpmn:messageEventDefinition messageRef="Message_GuideWithdrawal"/>
+      </bpmn:boundaryEvent>
+      <bpmn:serviceTask id="Case_Release" name="Release hold; exclude guide;&#10;increment guide attempts">
+        <bpmn:documentation>Idempotently release the reserved or confirmed guide slot, void any provisional confirmation, clear acceptance evidence, exclude the guide and increment guideAttempts before reallocation.</bpmn:documentation>
+        <bpmn:incoming>Case_flow8</bpmn:incoming>
+        <bpmn:incoming>Case_flow10</bpmn:incoming>
+        <bpmn:outgoing>Case_flow9</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Case_flow8" sourceRef="Case_GuideWithdraw" targetRef="Case_Release" name=""/>
+      <bpmn:sequenceFlow id="Case_flow9" sourceRef="Case_Release" targetRef="Case_Allocate" name="Reassign"/>
+      <bpmn:boundaryEvent id="Case_GuideWithdrawFinal" name="Guide withdraws" attachedToRef="Case_Finalize" cancelActivity="true">
+        <bpmn:outgoing>Case_flow10</bpmn:outgoing>
+        <bpmn:messageEventDefinition messageRef="Message_GuideWithdrawal"/>
+      </bpmn:boundaryEvent>
+      <bpmn:sequenceFlow id="Case_flow10" sourceRef="Case_GuideWithdrawFinal" targetRef="Case_Release" name="Undo confirmation; reassign"/>
+      <bpmn:scriptTask id="Case_Initialise" name="Initialise case counters&#10;and audit context" scriptFormat="text/plain">
+        <bpmn:incoming>Case_flow1</bpmn:incoming>
+        <bpmn:outgoing>Case_flow11</bpmn:outgoing>
+        <bpmn:script>Set corrections, topicChanges, revisionCycles, newTopicUsed, guideAttempts and operation-specific failure counts to zero; initialise excluded guides and case audit context.</bpmn:script>
+      </bpmn:scriptTask>
+      <bpmn:sequenceFlow id="Case_flow11" sourceRef="Case_Initialise" targetRef="Case_Submit" name=""/>
+    </bpmn:subProcess>
+    <bpmn:endEvent id="Main_Success" name="Project allocated&#10;and student notified">
+      <bpmn:incoming>Main_flow2</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Main_flow1" sourceRef="Main_Start" targetRef="Main_Run" name=""/>
+    <bpmn:sequenceFlow id="Main_flow2" sourceRef="Main_Run" targetRef="Main_Success" name=""/>
+    <bpmn:boundaryEvent id="Main_Closed" name="CASE_CLOSED" attachedToRef="Main_Run" cancelActivity="true">
+      <bpmn:outgoing>Main_flow3</bpmn:outgoing>
+      <bpmn:errorEventDefinition errorRef="Error_Closed"/>
+    </bpmn:boundaryEvent>
+    <bpmn:serviceTask id="Main_Close" name="Record rejection / lapse&#10;with reason and audit">
+      <bpmn:incoming>Main_flow3</bpmn:incoming>
+      <bpmn:outgoing>Main_flow4</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Main_Notice" name="Deliver closure reasons&#10;(portal / phone fallback)">
+      <bpmn:incoming>Main_flow4</bpmn:incoming>
+      <bpmn:outgoing>Main_flow5</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Main_EndClosed" name="Rejected / lapsed">
+      <bpmn:incoming>Main_flow5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Main_flow3" sourceRef="Main_Closed" targetRef="Main_Close" name=""/>
+    <bpmn:sequenceFlow id="Main_flow4" sourceRef="Main_Close" targetRef="Main_Notice" name=""/>
+    <bpmn:sequenceFlow id="Main_flow5" sourceRef="Main_Notice" targetRef="Main_EndClosed" name=""/>
+    <bpmn:boundaryEvent id="Main_Withdraw" name="Team withdraws" attachedToRef="Main_Run" cancelActivity="true">
+      <bpmn:outgoing>Main_flow6</bpmn:outgoing>
+      <bpmn:messageEventDefinition messageRef="Message_TeamWithdrawal"/>
+    </bpmn:boundaryEvent>
+    <bpmn:serviceTask id="Main_Undo" name="Release any guide hold;&#10;void pending records">
+      <bpmn:incoming>Main_flow6</bpmn:incoming>
+      <bpmn:outgoing>Main_flow7</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:userTask id="Main_WithdrawAudit" name="Record withdrawal;&#10;confirm to team">
+      <bpmn:incoming>Main_flow7</bpmn:incoming>
+      <bpmn:outgoing>Main_flow8</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Main_EndWithdraw" name="Closed as withdrawn">
+      <bpmn:incoming>Main_flow8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Main_flow6" sourceRef="Main_Withdraw" targetRef="Main_Undo" name=""/>
+    <bpmn:sequenceFlow id="Main_flow7" sourceRef="Main_Undo" targetRef="Main_WithdrawAudit" name=""/>
+    <bpmn:sequenceFlow id="Main_flow8" sourceRef="Main_WithdrawAudit" targetRef="Main_EndWithdraw" name=""/>
+    <bpmn:boundaryEvent id="Main_Esc" name="Review delay" attachedToRef="Main_Run" cancelActivity="false">
+      <bpmn:outgoing>Main_flow9</bpmn:outgoing>
+      <bpmn:escalationEventDefinition escalationRef="Esc_Review"/>
+    </bpmn:boundaryEvent>
+    <bpmn:userTask id="Main_Expedite" name="HoD assigns replacement&#10;reviewers / prioritises">
+      <bpmn:incoming>Main_flow9</bpmn:incoming>
+      <bpmn:outgoing>Main_flow10</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Main_EscEnd" name="Escalation handled;&#10;review continues">
+      <bpmn:incoming>Main_flow10</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Main_flow9" sourceRef="Main_Esc" targetRef="Main_Expedite" name=""/>
+    <bpmn:sequenceFlow id="Main_flow10" sourceRef="Main_Expedite" targetRef="Main_EscEnd" name=""/>
+  </bpmn:process>
+  <bpmn:process id="Process_Validate" name="Validate proposal (reusable)" isExecutable="false">
+    <bpmn:laneSet id="Validate_lanes">
+      <bpmn:lane id="Validate_lane0" name="Student / Team">
+        <bpmn:flowNodeRef>Validate_Correct</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Validate_CorrectionDue</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Validate_lane1" name="Project Coordinator">
+        <bpmn:flowNodeRef>Validate_Limit</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Validate_Exception</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Validate_Resolved</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Validate_Manual</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Validate_lane2" name="Review Committee / HoD"/>
+      <bpmn:lane id="Validate_lane3" name="Faculty Guide"/>
+      <bpmn:lane id="Validate_lane4" name="Project Management System">
+        <bpmn:flowNodeRef>Validate_Start</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Validate_Check</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Validate_Result</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Validate_End</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Validate_Invalid</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Validate_Error</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Validate_Retry</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Validate_Wait</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Validate_Start" name="Proposal received">
+      <bpmn:outgoing>Validate_flow1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Validate_Check" name="Validate fields, files,&#10;team rules and identity">
+      <bpmn:incoming>Validate_flow1</bpmn:incoming>
+      <bpmn:incoming>Validate_flow8</bpmn:incoming>
+      <bpmn:incoming>Validate_flow11</bpmn:incoming>
+      <bpmn:incoming>Validate_flow15</bpmn:incoming>
+      <bpmn:outgoing>Validate_flow2</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Validate_Result" name="Validation result?" default="Validate_flow5">
+      <bpmn:incoming>Validate_flow2</bpmn:incoming>
+      <bpmn:incoming>Validate_flow17</bpmn:incoming>
+      <bpmn:outgoing>Validate_flow3</bpmn:outgoing>
+      <bpmn:outgoing>Validate_flow4</bpmn:outgoing>
+      <bpmn:outgoing>Validate_flow5</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="Validate_End" name="Valid proposal">
+      <bpmn:incoming>Validate_flow3</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Validate_flow1" sourceRef="Validate_Start" targetRef="Validate_Check" name=""/>
+    <bpmn:sequenceFlow id="Validate_flow2" sourceRef="Validate_Check" targetRef="Validate_Result" name=""/>
+    <bpmn:sequenceFlow id="Validate_flow3" sourceRef="Validate_Result" targetRef="Validate_End" name="Valid">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">validation == valid</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="Validate_Correct" name="Correct listed errors&#10;(count +1; 7 days)">
+      <bpmn:incoming>Validate_flow6</bpmn:incoming>
+      <bpmn:outgoing>Validate_flow8</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="Validate_CorrectionDue" name="7 days" attachedToRef="Validate_Correct" cancelActivity="true">
+      <bpmn:outgoing>Validate_flow9</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P7D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:exclusiveGateway id="Validate_Limit" name="Corrections &lt; 2?" default="Validate_flow7">
+      <bpmn:incoming>Validate_flow4</bpmn:incoming>
+      <bpmn:outgoing>Validate_flow6</bpmn:outgoing>
+      <bpmn:outgoing>Validate_flow7</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Validate_Exception" name="Resolve persistent data&#10;errors or close case">
+      <bpmn:incoming>Validate_flow7</bpmn:incoming>
+      <bpmn:outgoing>Validate_flow10</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Validate_Resolved" name="Resolved?" default="Validate_flow12">
+      <bpmn:incoming>Validate_flow10</bpmn:incoming>
+      <bpmn:outgoing>Validate_flow11</bpmn:outgoing>
+      <bpmn:outgoing>Validate_flow12</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="Validate_Invalid" name="Rejected: invalid team&#10;or unresolved data">
+      <bpmn:incoming>Validate_flow5</bpmn:incoming>
+      <bpmn:incoming>Validate_flow9</bpmn:incoming>
+      <bpmn:incoming>Validate_flow12</bpmn:incoming>
+      <bpmn:errorEventDefinition errorRef="Error_Closed"/>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Validate_flow4" sourceRef="Validate_Result" targetRef="Validate_Limit" name="Missing / unreadable">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">validation == correctable</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Validate_flow5" sourceRef="Validate_Result" targetRef="Validate_Invalid" name="Invalid team / identity"/>
+    <bpmn:sequenceFlow id="Validate_flow6" sourceRef="Validate_Limit" targetRef="Validate_Correct" name="Yes">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">corrections &lt; 2</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Validate_flow7" sourceRef="Validate_Limit" targetRef="Validate_Exception" name="No"/>
+    <bpmn:sequenceFlow id="Validate_flow8" sourceRef="Validate_Correct" targetRef="Validate_Check" name="Resubmit"/>
+    <bpmn:sequenceFlow id="Validate_flow9" sourceRef="Validate_CorrectionDue" targetRef="Validate_Invalid" name=""/>
+    <bpmn:sequenceFlow id="Validate_flow10" sourceRef="Validate_Exception" targetRef="Validate_Resolved" name=""/>
+    <bpmn:sequenceFlow id="Validate_flow11" sourceRef="Validate_Resolved" targetRef="Validate_Check" name="Yes">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">dataResolved</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Validate_flow12" sourceRef="Validate_Resolved" targetRef="Validate_Invalid" name="No"/>
+    <bpmn:boundaryEvent id="Validate_Error" name="Technical error" attachedToRef="Validate_Check" cancelActivity="true">
+      <bpmn:outgoing>Validate_flow13</bpmn:outgoing>
+      <bpmn:errorEventDefinition errorRef="Error_Tech"/>
+    </bpmn:boundaryEvent>
+    <bpmn:exclusiveGateway id="Validate_Retry" name="Attempts &lt; 3?&#10;(increment on failure)" default="Validate_flow16">
+      <bpmn:incoming>Validate_flow13</bpmn:incoming>
+      <bpmn:outgoing>Validate_flow14</bpmn:outgoing>
+      <bpmn:outgoing>Validate_flow16</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:intermediateCatchEvent id="Validate_Wait" name="Wait 5 minutes">
+      <bpmn:incoming>Validate_flow14</bpmn:incoming>
+      <bpmn:outgoing>Validate_flow15</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">PT5M</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:intermediateCatchEvent>
+    <bpmn:userTask id="Validate_Manual" name="Validate manually;&#10;enter signed evidence">
+      <bpmn:incoming>Validate_flow16</bpmn:incoming>
+      <bpmn:outgoing>Validate_flow17</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Validate_flow13" sourceRef="Validate_Error" targetRef="Validate_Retry" name=""/>
+    <bpmn:sequenceFlow id="Validate_flow14" sourceRef="Validate_Retry" targetRef="Validate_Wait" name="Yes">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">techAttempts &lt; 3</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Validate_flow15" sourceRef="Validate_Wait" targetRef="Validate_Check" name="Retry"/>
+    <bpmn:sequenceFlow id="Validate_flow16" sourceRef="Validate_Retry" targetRef="Validate_Manual" name="No"/>
+    <bpmn:sequenceFlow id="Validate_flow17" sourceRef="Validate_Manual" targetRef="Validate_Result" name=""/>
+  </bpmn:process>
+  <bpmn:process id="Process_Screen" name="Screen proposal (reusable)" isExecutable="false">
+    <bpmn:laneSet id="Screen_lanes">
+      <bpmn:lane id="Screen_lane0" name="Student / Team">
+        <bpmn:flowNodeRef>Screen_Revise</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Screen_Due</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Screen_lane1" name="Project Coordinator">
+        <bpmn:flowNodeRef>Screen_Start</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Screen_Screen</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Screen_Suitable</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Screen_Adjudicate</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Screen_CanRevise</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Screen_Manual</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Screen_lane2" name="Review Committee / HoD">
+        <bpmn:flowNodeRef>Screen_End</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Screen_lane3" name="Faculty Guide"/>
+      <bpmn:lane id="Screen_lane4" name="Project Management System">
+        <bpmn:flowNodeRef>Screen_Similarity</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Screen_Match</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Screen_Rejected</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Screen_Tech</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Screen_Revalidate</bpmn:flowNodeRef>
+      </bpmn:lane>
+    </bpmn:laneSet>
+    <bpmn:startEvent id="Screen_Start" name="Validated proposal">
+      <bpmn:outgoing>Screen_flow1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Screen_Screen" name="Screen feasibility,&#10;resources and eligibility">
+      <bpmn:incoming>Screen_flow1</bpmn:incoming>
+      <bpmn:incoming>Screen_flow15</bpmn:incoming>
+      <bpmn:outgoing>Screen_flow2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Screen_Suitable" name="Suitable?" default="Screen_flow6">
+      <bpmn:incoming>Screen_flow2</bpmn:incoming>
+      <bpmn:outgoing>Screen_flow3</bpmn:outgoing>
+      <bpmn:outgoing>Screen_flow6</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Screen_Similarity" name="Check similarity&#10;and duplicate topics">
+      <bpmn:incoming>Screen_flow3</bpmn:incoming>
+      <bpmn:outgoing>Screen_flow4</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:exclusiveGateway id="Screen_Match" name="Suspicious match?" default="Screen_flow7">
+      <bpmn:incoming>Screen_flow4</bpmn:incoming>
+      <bpmn:incoming>Screen_flow14</bpmn:incoming>
+      <bpmn:outgoing>Screen_flow5</bpmn:outgoing>
+      <bpmn:outgoing>Screen_flow7</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:endEvent id="Screen_End" name="Ready for committee">
+      <bpmn:incoming>Screen_flow5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Screen_flow1" sourceRef="Screen_Start" targetRef="Screen_Screen" name=""/>
+    <bpmn:sequenceFlow id="Screen_flow2" sourceRef="Screen_Screen" targetRef="Screen_Suitable" name=""/>
+    <bpmn:sequenceFlow id="Screen_flow3" sourceRef="Screen_Suitable" targetRef="Screen_Similarity" name="Yes">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">screenPassed</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Screen_flow4" sourceRef="Screen_Similarity" targetRef="Screen_Match" name=""/>
+    <bpmn:sequenceFlow id="Screen_flow5" sourceRef="Screen_Match" targetRef="Screen_End" name="No">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">not suspicious</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="Screen_Adjudicate" name="Review evidence;&#10;choose revise or reject">
+      <bpmn:incoming>Screen_flow6</bpmn:incoming>
+      <bpmn:incoming>Screen_flow7</bpmn:incoming>
+      <bpmn:outgoing>Screen_flow8</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Screen_CanRevise" name="Revision justified&#10;and changes &lt; 2?" default="Screen_flow10">
+      <bpmn:incoming>Screen_flow8</bpmn:incoming>
+      <bpmn:outgoing>Screen_flow9</bpmn:outgoing>
+      <bpmn:outgoing>Screen_flow10</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Screen_Revise" name="Modify topic / scope;&#10;topicChanges +1 (7 days)">
+      <bpmn:incoming>Screen_flow9</bpmn:incoming>
+      <bpmn:outgoing>Screen_flow11</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:boundaryEvent id="Screen_Due" name="7 days" attachedToRef="Screen_Revise" cancelActivity="true">
+      <bpmn:outgoing>Screen_flow12</bpmn:outgoing>
+      <bpmn:timerEventDefinition>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">P7D</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:boundaryEvent>
+    <bpmn:endEvent id="Screen_Rejected" name="Rejected / lapsed:&#10;screening or plagiarism">
+      <bpmn:incoming>Screen_flow10</bpmn:incoming>
+      <bpmn:incoming>Screen_flow12</bpmn:incoming>
+      <bpmn:errorEventDefinition errorRef="Error_Closed"/>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Screen_flow6" sourceRef="Screen_Suitable" targetRef="Screen_Adjudicate" name="No"/>
+    <bpmn:sequenceFlow id="Screen_flow7" sourceRef="Screen_Match" targetRef="Screen_Adjudicate" name="Yes"/>
+    <bpmn:sequenceFlow id="Screen_flow8" sourceRef="Screen_Adjudicate" targetRef="Screen_CanRevise" name=""/>
+    <bpmn:sequenceFlow id="Screen_flow9" sourceRef="Screen_CanRevise" targetRef="Screen_Revise" name="Yes">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">changeAllowed and topicChanges &lt; 2</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Screen_flow10" sourceRef="Screen_CanRevise" targetRef="Screen_Rejected" name="No"/>
+    <bpmn:sequenceFlow id="Screen_flow11" sourceRef="Screen_Revise" targetRef="Screen_Revalidate" name="Changed proposal"/>
+    <bpmn:sequenceFlow id="Screen_flow12" sourceRef="Screen_Due" targetRef="Screen_Rejected" name=""/>
+    <bpmn:boundaryEvent id="Screen_Tech" name="Similarity unavailable" attachedToRef="Screen_Similarity" cancelActivity="true">
+      <bpmn:outgoing>Screen_flow13</bpmn:outgoing>
+      <bpmn:errorEventDefinition errorRef="Error_Tech"/>
+    </bpmn:boundaryEvent>
+    <bpmn:userTask id="Screen_Manual" name="Compare repository&#10;manually; record evidence">
+      <bpmn:incoming>Screen_flow13</bpmn:incoming>
+      <bpmn:outgoing>Screen_flow14</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Screen_flow13" sourceRef="Screen_Tech" targetRef="Screen_Manual" name=""/>
+    <bpmn:sequenceFlow id="Screen_flow14" sourceRef="Screen_Manual" targetRef="Screen_Match" name=""/>
+    <bpmn:callActivity id="Screen_Revalidate" name="Revalidate changed proposal" calledElement="Process_Validate">
+      <bpmn:incoming>Screen_flow11</bpmn:incoming>
+      <bpmn:outgoing>Screen_flow15</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Screen_flow15" sourceRef="Screen_Revalidate" targetRef="Screen_Screen" name="Valid changed data"/>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="Diagram_Main" name="01 | Overall case and closure">
+    <bpmndi:BPMNPlane id="Plane_Main" bpmnElement="Process_A1">
+      <bpmndi:BPMNShape id="Shape_Main_lane0" bpmnElement="Main_lane0" isHorizontal="true">
+        <dc:Bounds x="20" y="68" width="1390" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_lane1" bpmnElement="Main_lane1" isHorizontal="true">
+        <dc:Bounds x="20" y="268" width="1390" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_lane2" bpmnElement="Main_lane2" isHorizontal="true">
+        <dc:Bounds x="20" y="468" width="1390" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_lane3" bpmnElement="Main_lane3" isHorizontal="true">
+        <dc:Bounds x="20" y="668" width="1390" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_lane4" bpmnElement="Main_lane4" isHorizontal="true">
+        <dc:Bounds x="20" y="868" width="1390" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_Start" bpmnElement="Main_Start">
+        <dc:Bounds x="233.0" y="102.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="211.25" y="149.0" width="85.5" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_Run" bpmnElement="Main_Run" isExpanded="false">
+        <dc:Bounds x="365.0" y="280.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_Success" bpmnElement="Main_Success">
+        <dc:Bounds x="1313.0" y="902.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1277.0" y="949.0" width="114.0" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_Closed" bpmnElement="Main_Closed">
+        <dc:Bounds x="478.0" y="346.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="519.0" y="384.0" width="62.7" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_Close" bpmnElement="Main_Close">
+        <dc:Bounds x="725.0" y="880.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_Notice" bpmnElement="Main_Notice">
+        <dc:Bounds x="905.0" y="280.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_EndClosed" bpmnElement="Main_EndClosed">
+        <dc:Bounds x="1313.0" y="302.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1285.55" y="349.0" width="96.9" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_Withdraw" bpmnElement="Main_Withdraw">
+        <dc:Bounds x="348.0" y="305.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="260.2" y="280.0" width="79.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_Undo" bpmnElement="Main_Undo">
+        <dc:Bounds x="545.0" y="980.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_WithdrawAudit" bpmnElement="Main_WithdrawAudit">
+        <dc:Bounds x="725.0" y="380.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_EndWithdraw" bpmnElement="Main_EndWithdraw">
+        <dc:Bounds x="1133.0" y="402.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1099.85" y="449.0" width="108.3" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_Esc" bpmnElement="Main_Esc">
+        <dc:Bounds x="415.0" y="263.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="457.0" y="251.0" width="68.4" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_Expedite" bpmnElement="Main_Expedite">
+        <dc:Bounds x="725.0" y="480.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Main_EscEnd" bpmnElement="Main_EscEnd">
+        <dc:Bounds x="1133.0" y="502.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1099.85" y="549.0" width="108.3" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Main_flow1" bpmnElement="Main_flow1">
+        <di:waypoint x="275.0" y="123.0"/>
+        <di:waypoint x="300" y="123.0"/>
+        <di:waypoint x="300" y="120"/>
+        <di:waypoint x="540" y="120"/>
+        <di:waypoint x="540" y="320"/>
+        <di:waypoint x="530" y="320"/>
+        <di:waypoint x="530" y="323.0"/>
+        <di:waypoint x="503.0" y="323.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Main_flow2" bpmnElement="Main_flow2">
+        <di:waypoint x="503.0" y="323.0"/>
+        <di:waypoint x="530" y="323.0"/>
+        <di:waypoint x="530" y="320"/>
+        <di:waypoint x="890" y="320"/>
+        <di:waypoint x="890" y="920"/>
+        <di:waypoint x="1290" y="920"/>
+        <di:waypoint x="1290" y="923.0"/>
+        <di:waypoint x="1313.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Main_flow3" bpmnElement="Main_flow3">
+        <di:waypoint x="512.0" y="363.0"/>
+        <di:waypoint x="540" y="363.0"/>
+        <di:waypoint x="540" y="360"/>
+        <di:waypoint x="700" y="360"/>
+        <di:waypoint x="700" y="923.0"/>
+        <di:waypoint x="725.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Main_flow4" bpmnElement="Main_flow4">
+        <di:waypoint x="863.0" y="923.0"/>
+        <di:waypoint x="890" y="923.0"/>
+        <di:waypoint x="890" y="920"/>
+        <di:waypoint x="880" y="920"/>
+        <di:waypoint x="880" y="323.0"/>
+        <di:waypoint x="905.0" y="323.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Main_flow5" bpmnElement="Main_flow5">
+        <di:waypoint x="1043.0" y="323.0"/>
+        <di:waypoint x="1070" y="323.0"/>
+        <di:waypoint x="1070" y="320"/>
+        <di:waypoint x="1290" y="320"/>
+        <di:waypoint x="1290" y="323.0"/>
+        <di:waypoint x="1313.0" y="323.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Main_flow6" bpmnElement="Main_flow6">
+        <di:waypoint x="348.0" y="322.0"/>
+        <di:waypoint x="320" y="322.0"/>
+        <di:waypoint x="320" y="1020"/>
+        <di:waypoint x="520" y="1020"/>
+        <di:waypoint x="520" y="1023.0"/>
+        <di:waypoint x="545.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Main_flow7" bpmnElement="Main_flow7">
+        <di:waypoint x="683.0" y="1023.0"/>
+        <di:waypoint x="710" y="1023.0"/>
+        <di:waypoint x="710" y="420"/>
+        <di:waypoint x="700" y="420"/>
+        <di:waypoint x="700" y="423.0"/>
+        <di:waypoint x="725.0" y="423.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Main_flow8" bpmnElement="Main_flow8">
+        <di:waypoint x="863.0" y="423.0"/>
+        <di:waypoint x="890" y="423.0"/>
+        <di:waypoint x="890" y="420"/>
+        <di:waypoint x="1110" y="420"/>
+        <di:waypoint x="1110" y="423.0"/>
+        <di:waypoint x="1133.0" y="423.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Main_flow9" bpmnElement="Main_flow9">
+        <di:waypoint x="432.0" y="263.0"/>
+        <di:waypoint x="430" y="263.0"/>
+        <di:waypoint x="430" y="230"/>
+        <di:waypoint x="690" y="230"/>
+        <di:waypoint x="690" y="520"/>
+        <di:waypoint x="700" y="520"/>
+        <di:waypoint x="700" y="523.0"/>
+        <di:waypoint x="725.0" y="523.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Main_flow10" bpmnElement="Main_flow10">
+        <di:waypoint x="863.0" y="523.0"/>
+        <di:waypoint x="890" y="523.0"/>
+        <di:waypoint x="890" y="520"/>
+        <di:waypoint x="1110" y="520"/>
+        <di:waypoint x="1110" y="523.0"/>
+        <di:waypoint x="1133.0" y="523.0"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_Case" name="02 | Approval case - happy path and recovery">
+    <bpmndi:BPMNPlane id="Plane_Case" bpmnElement="Main_Run">
+      <bpmndi:BPMNShape id="Shape_Case_lane0" bpmnElement="Case_lane0" isHorizontal="true">
+        <dc:Bounds x="20" y="68" width="1570" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_lane1" bpmnElement="Case_lane1" isHorizontal="true">
+        <dc:Bounds x="20" y="268" width="1570" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_lane2" bpmnElement="Case_lane2" isHorizontal="true">
+        <dc:Bounds x="20" y="468" width="1570" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_lane3" bpmnElement="Case_lane3" isHorizontal="true">
+        <dc:Bounds x="20" y="668" width="1570" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_lane4" bpmnElement="Case_lane4" isHorizontal="true">
+        <dc:Bounds x="20" y="868" width="1570" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_Start" bpmnElement="Case_Start">
+        <dc:Bounds x="233.0" y="902.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="222.65" y="949.0" width="62.7" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_Submit" bpmnElement="Case_Submit" isExpanded="false">
+        <dc:Bounds x="365.0" y="80.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_Validate" bpmnElement="Case_Validate">
+        <dc:Bounds x="545.0" y="880.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_Screen" bpmnElement="Case_Screen">
+        <dc:Bounds x="725.0" y="280.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_Review" bpmnElement="Case_Review" isExpanded="false">
+        <dc:Bounds x="905.0" y="480.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_Allocate" bpmnElement="Case_Allocate" isExpanded="false">
+        <dc:Bounds x="1085.0" y="880.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_Finalize" bpmnElement="Case_Finalize" isExpanded="false">
+        <dc:Bounds x="1265.0" y="880.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_End" bpmnElement="Case_End">
+        <dc:Bounds x="1493.0" y="902.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1474.1" y="949.0" width="79.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_GuideWithdraw" bpmnElement="Case_GuideWithdraw">
+        <dc:Bounds x="1198.0" y="946.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1239.0" y="984.0" width="85.5" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_Release" bpmnElement="Case_Release">
+        <dc:Bounds x="905.0" y="980.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_GuideWithdrawFinal" bpmnElement="Case_GuideWithdrawFinal">
+        <dc:Bounds x="1378.0" y="946.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1419.0" y="984.0" width="85.5" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Case_Initialise" bpmnElement="Case_Initialise">
+        <dc:Bounds x="185.0" y="980.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Case_flow1" bpmnElement="Case_flow1">
+        <di:waypoint x="275.0" y="923.0"/>
+        <di:waypoint x="300" y="923.0"/>
+        <di:waypoint x="300" y="920"/>
+        <di:waypoint x="350" y="920"/>
+        <di:waypoint x="350" y="1023.0"/>
+        <di:waypoint x="323.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Case_flow2" bpmnElement="Case_flow2">
+        <di:waypoint x="503.0" y="123.0"/>
+        <di:waypoint x="530" y="123.0"/>
+        <di:waypoint x="530" y="120"/>
+        <di:waypoint x="520" y="120"/>
+        <di:waypoint x="520" y="923.0"/>
+        <di:waypoint x="545.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Case_flow3" bpmnElement="Case_flow3">
+        <di:waypoint x="683.0" y="923.0"/>
+        <di:waypoint x="710" y="923.0"/>
+        <di:waypoint x="710" y="320"/>
+        <di:waypoint x="700" y="320"/>
+        <di:waypoint x="700" y="323.0"/>
+        <di:waypoint x="725.0" y="323.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Case_flow4" bpmnElement="Case_flow4">
+        <di:waypoint x="863.0" y="323.0"/>
+        <di:waypoint x="890" y="323.0"/>
+        <di:waypoint x="890" y="320"/>
+        <di:waypoint x="880" y="320"/>
+        <di:waypoint x="880" y="523.0"/>
+        <di:waypoint x="905.0" y="523.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Case_flow5" bpmnElement="Case_flow5">
+        <di:waypoint x="1043.0" y="523.0"/>
+        <di:waypoint x="1070" y="523.0"/>
+        <di:waypoint x="1070" y="520"/>
+        <di:waypoint x="1060" y="520"/>
+        <di:waypoint x="1060" y="923.0"/>
+        <di:waypoint x="1085.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Case_flow6" bpmnElement="Case_flow6">
+        <di:waypoint x="1223.0" y="923.0"/>
+        <di:waypoint x="1250" y="923.0"/>
+        <di:waypoint x="1250" y="920"/>
+        <di:waypoint x="1240" y="920"/>
+        <di:waypoint x="1240" y="923.0"/>
+        <di:waypoint x="1265.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Case_flow7" bpmnElement="Case_flow7">
+        <di:waypoint x="1403.0" y="923.0"/>
+        <di:waypoint x="1430" y="923.0"/>
+        <di:waypoint x="1430" y="920"/>
+        <di:waypoint x="1470" y="920"/>
+        <di:waypoint x="1470" y="923.0"/>
+        <di:waypoint x="1493.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Case_flow8" bpmnElement="Case_flow8">
+        <di:waypoint x="1215.0" y="980.0"/>
+        <di:waypoint x="1220" y="980.0"/>
+        <di:waypoint x="1220" y="1000"/>
+        <di:waypoint x="1070" y="1000"/>
+        <di:waypoint x="1070" y="1023.0"/>
+        <di:waypoint x="1043.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Case_flow9" bpmnElement="Case_flow9">
+        <di:waypoint x="1043.0" y="1023.0"/>
+        <di:waypoint x="1070" y="1023.0"/>
+        <di:waypoint x="1070" y="1020"/>
+        <di:waypoint x="1060" y="1020"/>
+        <di:waypoint x="1060" y="923.0"/>
+        <di:waypoint x="1085.0" y="923.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1065" y="989.75" width="49.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Case_flow10" bpmnElement="Case_flow10">
+        <di:waypoint x="1395.0" y="980.0"/>
+        <di:waypoint x="1400" y="980.0"/>
+        <di:waypoint x="1400" y="1020"/>
+        <di:waypoint x="1070" y="1020"/>
+        <di:waypoint x="1070" y="1023.0"/>
+        <di:waypoint x="1043.0" y="1023.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1159.1" y="1003" width="151.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Case_flow11" bpmnElement="Case_flow11">
+        <di:waypoint x="323.0" y="1023.0"/>
+        <di:waypoint x="350" y="1023.0"/>
+        <di:waypoint x="350" y="1020"/>
+        <di:waypoint x="430" y="1020"/>
+        <di:waypoint x="430" y="166.0"/>
+        <di:waypoint x="434.0" y="166.0"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_Submit" name="03 | Submission and deadline">
+    <bpmndi:BPMNPlane id="Plane_Submit" bpmnElement="Case_Submit">
+      <bpmndi:BPMNShape id="Shape_Submit_lane0" bpmnElement="Submit_lane0" isHorizontal="true">
+        <dc:Bounds x="20" y="68" width="1390" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Submit_lane1" bpmnElement="Submit_lane1" isHorizontal="true">
+        <dc:Bounds x="20" y="268" width="1390" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Submit_lane2" bpmnElement="Submit_lane2" isHorizontal="true">
+        <dc:Bounds x="20" y="468" width="1390" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Submit_lane3" bpmnElement="Submit_lane3" isHorizontal="true">
+        <dc:Bounds x="20" y="668" width="1390" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Submit_lane4" bpmnElement="Submit_lane4" isHorizontal="true">
+        <dc:Bounds x="20" y="868" width="1390" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Submit_Start" bpmnElement="Submit_Start">
+        <dc:Bounds x="233.0" y="102.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="211.25" y="149.0" width="85.5" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Submit_Form" bpmnElement="Submit_Form">
+        <dc:Bounds x="365.0" y="80.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Submit_End" bpmnElement="Submit_End">
+        <dc:Bounds x="1313.0" y="902.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1285.55" y="949.0" width="96.9" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Submit_Deadline" bpmnElement="Submit_Deadline">
+        <dc:Bounds x="478.0" y="146.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="519.0" y="184.0" width="108.3" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Submit_Late" bpmnElement="Submit_Late">
+        <dc:Bounds x="545.0" y="280.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Submit_LateOK" bpmnElement="Submit_LateOK">
+        <dc:Bounds x="772.0" y="301.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="742.7" y="350.0" width="102.60000000000001" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Submit_LateForm" bpmnElement="Submit_LateForm">
+        <dc:Bounds x="905.0" y="80.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Submit_Expired" bpmnElement="Submit_Expired">
+        <dc:Bounds x="1018.0" y="146.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1059.0" y="184.0" width="96.9" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Submit_Lapsed" bpmnElement="Submit_Lapsed">
+        <dc:Bounds x="1313.0" y="1002.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1305.5" y="1049.0" width="57.0" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Submit_flow1" bpmnElement="Submit_flow1">
+        <di:waypoint x="275.0" y="123.0"/>
+        <di:waypoint x="300" y="123.0"/>
+        <di:waypoint x="300" y="120"/>
+        <di:waypoint x="340" y="120"/>
+        <di:waypoint x="340" y="123.0"/>
+        <di:waypoint x="365.0" y="123.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Submit_flow2" bpmnElement="Submit_flow2">
+        <di:waypoint x="503.0" y="123.0"/>
+        <di:waypoint x="530" y="123.0"/>
+        <di:waypoint x="530" y="120"/>
+        <di:waypoint x="890" y="120"/>
+        <di:waypoint x="890" y="920"/>
+        <di:waypoint x="1290" y="920"/>
+        <di:waypoint x="1290" y="923.0"/>
+        <di:waypoint x="1313.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Submit_flow3" bpmnElement="Submit_flow3">
+        <di:waypoint x="495.0" y="180.0"/>
+        <di:waypoint x="500" y="180.0"/>
+        <di:waypoint x="500" y="320"/>
+        <di:waypoint x="520" y="320"/>
+        <di:waypoint x="520" y="323.0"/>
+        <di:waypoint x="545.0" y="323.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Submit_flow4" bpmnElement="Submit_flow4">
+        <di:waypoint x="683.0" y="323.0"/>
+        <di:waypoint x="710" y="323.0"/>
+        <di:waypoint x="710" y="320"/>
+        <di:waypoint x="750" y="320"/>
+        <di:waypoint x="750" y="323.0"/>
+        <di:waypoint x="772.0" y="323.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Submit_flow5" bpmnElement="Submit_flow5">
+        <di:waypoint x="816.0" y="323.0"/>
+        <di:waypoint x="840" y="323.0"/>
+        <di:waypoint x="840" y="320"/>
+        <di:waypoint x="880" y="320"/>
+        <di:waypoint x="880" y="123.0"/>
+        <di:waypoint x="905.0" y="123.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="848.9" y="303" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Submit_flow6" bpmnElement="Submit_flow6">
+        <di:waypoint x="816.0" y="323.0"/>
+        <di:waypoint x="840" y="323.0"/>
+        <di:waypoint x="840" y="330"/>
+        <di:waypoint x="880" y="330"/>
+        <di:waypoint x="880" y="1020"/>
+        <di:waypoint x="1290" y="1020"/>
+        <di:waypoint x="1290" y="1023.0"/>
+        <di:waypoint x="1313.0" y="1023.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="885" y="669.0" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Submit_flow7" bpmnElement="Submit_flow7">
+        <di:waypoint x="1043.0" y="123.0"/>
+        <di:waypoint x="1070" y="123.0"/>
+        <di:waypoint x="1070" y="120"/>
+        <di:waypoint x="1330" y="120"/>
+        <di:waypoint x="1330" y="902.0"/>
+        <di:waypoint x="1334.0" y="902.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Submit_flow8" bpmnElement="Submit_flow8">
+        <di:waypoint x="1035.0" y="180.0"/>
+        <di:waypoint x="1040" y="180.0"/>
+        <di:waypoint x="1040" y="980"/>
+        <di:waypoint x="1330" y="980"/>
+        <di:waypoint x="1330" y="1002.0"/>
+        <di:waypoint x="1334.0" y="1002.0"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_Validate" name="04 | Validation, correction and technical recovery">
+    <bpmndi:BPMNPlane id="Plane_Validate" bpmnElement="Process_Validate">
+      <bpmndi:BPMNShape id="Shape_Validate_lane0" bpmnElement="Validate_lane0" isHorizontal="true">
+        <dc:Bounds x="20" y="68" width="1750" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_lane1" bpmnElement="Validate_lane1" isHorizontal="true">
+        <dc:Bounds x="20" y="268" width="1750" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_lane2" bpmnElement="Validate_lane2" isHorizontal="true">
+        <dc:Bounds x="20" y="468" width="1750" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_lane3" bpmnElement="Validate_lane3" isHorizontal="true">
+        <dc:Bounds x="20" y="668" width="1750" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_lane4" bpmnElement="Validate_lane4" isHorizontal="true">
+        <dc:Bounds x="20" y="868" width="1750" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_Start" bpmnElement="Validate_Start">
+        <dc:Bounds x="233.0" y="902.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="205.55" y="949.0" width="96.9" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_Check" bpmnElement="Validate_Check">
+        <dc:Bounds x="365.0" y="880.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_Result" bpmnElement="Validate_Result">
+        <dc:Bounds x="592.0" y="901.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="562.7" y="950.0" width="102.60000000000001" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_End" bpmnElement="Validate_End">
+        <dc:Bounds x="1673.0" y="902.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1654.1" y="949.0" width="79.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_Correct" bpmnElement="Validate_Correct">
+        <dc:Bounds x="905.0" y="80.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_CorrectionDue" bpmnElement="Validate_CorrectionDue">
+        <dc:Bounds x="1018.0" y="146.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1059.0" y="184.0" width="34.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_Limit" bpmnElement="Validate_Limit">
+        <dc:Bounds x="772.0" y="301.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="748.4" y="350.0" width="91.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_Exception" bpmnElement="Validate_Exception">
+        <dc:Bounds x="1085.0" y="280.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_Resolved" bpmnElement="Validate_Resolved">
+        <dc:Bounds x="1312.0" y="301.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1308.35" y="350.0" width="51.300000000000004" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_Invalid" bpmnElement="Validate_Invalid">
+        <dc:Bounds x="1673.0" y="1002.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1642.7" y="1049.0" width="102.60000000000001" height="36"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_Error" bpmnElement="Validate_Error">
+        <dc:Bounds x="478.0" y="946.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="519.0" y="984.0" width="85.5" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_Retry" bpmnElement="Validate_Retry">
+        <dc:Bounds x="772.0" y="1001.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="756.95" y="1050.0" width="74.10000000000001" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_Wait" bpmnElement="Validate_Wait">
+        <dc:Bounds x="953.0" y="1002.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="934.1" y="1049.0" width="79.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Validate_Manual" bpmnElement="Validate_Manual">
+        <dc:Bounds x="1445.0" y="280.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow1" bpmnElement="Validate_flow1">
+        <di:waypoint x="275.0" y="923.0"/>
+        <di:waypoint x="300" y="923.0"/>
+        <di:waypoint x="300" y="920"/>
+        <di:waypoint x="340" y="920"/>
+        <di:waypoint x="340" y="923.0"/>
+        <di:waypoint x="365.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow2" bpmnElement="Validate_flow2">
+        <di:waypoint x="503.0" y="923.0"/>
+        <di:waypoint x="530" y="923.0"/>
+        <di:waypoint x="530" y="920"/>
+        <di:waypoint x="570" y="920"/>
+        <di:waypoint x="570" y="923.0"/>
+        <di:waypoint x="592.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow3" bpmnElement="Validate_flow3">
+        <di:waypoint x="636.0" y="923.0"/>
+        <di:waypoint x="660" y="923.0"/>
+        <di:waypoint x="660" y="920"/>
+        <di:waypoint x="1650" y="920"/>
+        <di:waypoint x="1650" y="923.0"/>
+        <di:waypoint x="1673.0" y="923.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1138.5" y="903" width="33.0" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow4" bpmnElement="Validate_flow4">
+        <di:waypoint x="636.0" y="923.0"/>
+        <di:waypoint x="660" y="923.0"/>
+        <di:waypoint x="660" y="320"/>
+        <di:waypoint x="750" y="320"/>
+        <di:waypoint x="750" y="323.0"/>
+        <di:waypoint x="772.0" y="323.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="665" y="615.5" width="114.0" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow5" bpmnElement="Validate_flow5">
+        <di:waypoint x="636.0" y="923.0"/>
+        <di:waypoint x="660" y="923.0"/>
+        <di:waypoint x="660" y="930"/>
+        <di:waypoint x="1640" y="930"/>
+        <di:waypoint x="1640" y="1020"/>
+        <di:waypoint x="1650" y="1020"/>
+        <di:waypoint x="1650" y="1023.0"/>
+        <di:waypoint x="1673.0" y="1023.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="839.9" y="913" width="130.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow6" bpmnElement="Validate_flow6">
+        <di:waypoint x="816.0" y="323.0"/>
+        <di:waypoint x="840" y="323.0"/>
+        <di:waypoint x="840" y="120"/>
+        <di:waypoint x="880" y="120"/>
+        <di:waypoint x="880" y="123.0"/>
+        <di:waypoint x="905.0" y="123.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="845" y="215.5" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow7" bpmnElement="Validate_flow7">
+        <di:waypoint x="816.0" y="323.0"/>
+        <di:waypoint x="840" y="323.0"/>
+        <di:waypoint x="840" y="320"/>
+        <di:waypoint x="1060" y="320"/>
+        <di:waypoint x="1060" y="323.0"/>
+        <di:waypoint x="1085.0" y="323.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="941.6" y="303" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow8" bpmnElement="Validate_flow8">
+        <di:waypoint x="905.0" y="123.0"/>
+        <di:waypoint x="880" y="123.0"/>
+        <di:waypoint x="880" y="280"/>
+        <di:waypoint x="530" y="280"/>
+        <di:waypoint x="530" y="923.0"/>
+        <di:waypoint x="503.0" y="923.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="885" y="195.5" width="49.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow9" bpmnElement="Validate_flow9">
+        <di:waypoint x="1035.0" y="180.0"/>
+        <di:waypoint x="1040" y="180.0"/>
+        <di:waypoint x="1040" y="980"/>
+        <di:waypoint x="1690" y="980"/>
+        <di:waypoint x="1690" y="1002.0"/>
+        <di:waypoint x="1694.0" y="1002.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow10" bpmnElement="Validate_flow10">
+        <di:waypoint x="1223.0" y="323.0"/>
+        <di:waypoint x="1250" y="323.0"/>
+        <di:waypoint x="1250" y="320"/>
+        <di:waypoint x="1290" y="320"/>
+        <di:waypoint x="1290" y="323.0"/>
+        <di:waypoint x="1312.0" y="323.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow11" bpmnElement="Validate_flow11">
+        <di:waypoint x="1312.0" y="323.0"/>
+        <di:waypoint x="1290" y="323.0"/>
+        <di:waypoint x="1290" y="880"/>
+        <di:waypoint x="540" y="880"/>
+        <di:waypoint x="540" y="920"/>
+        <di:waypoint x="530" y="920"/>
+        <di:waypoint x="530" y="923.0"/>
+        <di:waypoint x="503.0" y="923.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1295" y="595.5" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow12" bpmnElement="Validate_flow12">
+        <di:waypoint x="1356.0" y="323.0"/>
+        <di:waypoint x="1380" y="323.0"/>
+        <di:waypoint x="1380" y="1020"/>
+        <di:waypoint x="1650" y="1020"/>
+        <di:waypoint x="1650" y="1023.0"/>
+        <di:waypoint x="1673.0" y="1023.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1385" y="665.5" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow13" bpmnElement="Validate_flow13">
+        <di:waypoint x="495.0" y="980.0"/>
+        <di:waypoint x="500" y="980.0"/>
+        <di:waypoint x="500" y="1020"/>
+        <di:waypoint x="750" y="1020"/>
+        <di:waypoint x="750" y="1023.0"/>
+        <di:waypoint x="772.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow14" bpmnElement="Validate_flow14">
+        <di:waypoint x="816.0" y="1023.0"/>
+        <di:waypoint x="840" y="1023.0"/>
+        <di:waypoint x="840" y="1020"/>
+        <di:waypoint x="930" y="1020"/>
+        <di:waypoint x="930" y="1023.0"/>
+        <di:waypoint x="953.0" y="1023.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="873.9" y="1003" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow15" bpmnElement="Validate_flow15">
+        <di:waypoint x="974.0" y="1002.0"/>
+        <di:waypoint x="970" y="1002.0"/>
+        <di:waypoint x="970" y="980"/>
+        <di:waypoint x="620" y="980"/>
+        <di:waypoint x="620" y="1010"/>
+        <di:waypoint x="430" y="1010"/>
+        <di:waypoint x="430" y="966.0"/>
+        <di:waypoint x="434.0" y="966.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="778.5" y="963" width="33.0" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow16" bpmnElement="Validate_flow16">
+        <di:waypoint x="816.0" y="1023.0"/>
+        <di:waypoint x="840" y="1023.0"/>
+        <di:waypoint x="840" y="890"/>
+        <di:waypoint x="1420" y="890"/>
+        <di:waypoint x="1420" y="323.0"/>
+        <di:waypoint x="1445.0" y="323.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="845" y="950.5" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Validate_flow17" bpmnElement="Validate_flow17">
+        <di:waypoint x="1445.0" y="323.0"/>
+        <di:waypoint x="1420" y="323.0"/>
+        <di:waypoint x="1420" y="320"/>
+        <di:waypoint x="1390" y="320"/>
+        <di:waypoint x="1390" y="870"/>
+        <di:waypoint x="610" y="870"/>
+        <di:waypoint x="610" y="901.0"/>
+        <di:waypoint x="614.0" y="901.0"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_Screen" name="05 | Screening and similarity / topic changes">
+    <bpmndi:BPMNPlane id="Plane_Screen" bpmnElement="Process_Screen">
+      <bpmndi:BPMNShape id="Shape_Screen_lane0" bpmnElement="Screen_lane0" isHorizontal="true">
+        <dc:Bounds x="20" y="68" width="1750" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_lane1" bpmnElement="Screen_lane1" isHorizontal="true">
+        <dc:Bounds x="20" y="268" width="1750" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_lane2" bpmnElement="Screen_lane2" isHorizontal="true">
+        <dc:Bounds x="20" y="468" width="1750" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_lane3" bpmnElement="Screen_lane3" isHorizontal="true">
+        <dc:Bounds x="20" y="668" width="1750" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_lane4" bpmnElement="Screen_lane4" isHorizontal="true">
+        <dc:Bounds x="20" y="868" width="1750" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_Start" bpmnElement="Screen_Start">
+        <dc:Bounds x="233.0" y="302.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="202.7" y="349.0" width="102.60000000000001" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_Screen" bpmnElement="Screen_Screen">
+        <dc:Bounds x="365.0" y="280.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_Suitable" bpmnElement="Screen_Suitable">
+        <dc:Bounds x="592.0" y="301.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="588.35" y="350.0" width="51.300000000000004" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_Similarity" bpmnElement="Screen_Similarity">
+        <dc:Bounds x="725.0" y="880.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_Match" bpmnElement="Screen_Match">
+        <dc:Bounds x="952.0" y="901.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="925.55" y="950.0" width="96.9" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_End" bpmnElement="Screen_End">
+        <dc:Bounds x="1673.0" y="502.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1639.85" y="549.0" width="108.3" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_Adjudicate" bpmnElement="Screen_Adjudicate">
+        <dc:Bounds x="1085.0" y="280.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_CanRevise" bpmnElement="Screen_CanRevise">
+        <dc:Bounds x="1312.0" y="301.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1282.7" y="350.0" width="102.60000000000001" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_Revise" bpmnElement="Screen_Revise">
+        <dc:Bounds x="1445.0" y="80.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_Due" bpmnElement="Screen_Due">
+        <dc:Bounds x="1558.0" y="146.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1599.0" y="184.0" width="34.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_Rejected" bpmnElement="Screen_Rejected">
+        <dc:Bounds x="1673.0" y="1002.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1642.7" y="1049.0" width="102.60000000000001" height="36"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_Tech" bpmnElement="Screen_Tech">
+        <dc:Bounds x="838.0" y="946.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="879.0" y="984.0" width="62.7" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_Manual" bpmnElement="Screen_Manual">
+        <dc:Bounds x="905.0" y="380.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Screen_Revalidate" bpmnElement="Screen_Revalidate">
+        <dc:Bounds x="1265.0" y="980.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow1" bpmnElement="Screen_flow1">
+        <di:waypoint x="275.0" y="323.0"/>
+        <di:waypoint x="300" y="323.0"/>
+        <di:waypoint x="300" y="320"/>
+        <di:waypoint x="340" y="320"/>
+        <di:waypoint x="340" y="323.0"/>
+        <di:waypoint x="365.0" y="323.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow2" bpmnElement="Screen_flow2">
+        <di:waypoint x="503.0" y="323.0"/>
+        <di:waypoint x="530" y="323.0"/>
+        <di:waypoint x="530" y="320"/>
+        <di:waypoint x="570" y="320"/>
+        <di:waypoint x="570" y="323.0"/>
+        <di:waypoint x="592.0" y="323.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow3" bpmnElement="Screen_flow3">
+        <di:waypoint x="636.0" y="323.0"/>
+        <di:waypoint x="660" y="323.0"/>
+        <di:waypoint x="660" y="920"/>
+        <di:waypoint x="700" y="920"/>
+        <di:waypoint x="700" y="923.0"/>
+        <di:waypoint x="725.0" y="923.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="665" y="615.5" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow4" bpmnElement="Screen_flow4">
+        <di:waypoint x="863.0" y="923.0"/>
+        <di:waypoint x="890" y="923.0"/>
+        <di:waypoint x="890" y="920"/>
+        <di:waypoint x="930" y="920"/>
+        <di:waypoint x="930" y="923.0"/>
+        <di:waypoint x="952.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow5" bpmnElement="Screen_flow5">
+        <di:waypoint x="996.0" y="923.0"/>
+        <di:waypoint x="1020" y="923.0"/>
+        <di:waypoint x="1020" y="520"/>
+        <di:waypoint x="1650" y="520"/>
+        <di:waypoint x="1650" y="523.0"/>
+        <di:waypoint x="1673.0" y="523.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1025" y="715.5" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow6" bpmnElement="Screen_flow6">
+        <di:waypoint x="636.0" y="323.0"/>
+        <di:waypoint x="660" y="323.0"/>
+        <di:waypoint x="660" y="320"/>
+        <di:waypoint x="1060" y="320"/>
+        <di:waypoint x="1060" y="323.0"/>
+        <di:waypoint x="1085.0" y="323.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="851.6" y="303" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow7" bpmnElement="Screen_flow7">
+        <di:waypoint x="996.0" y="923.0"/>
+        <di:waypoint x="1020" y="923.0"/>
+        <di:waypoint x="1020" y="920"/>
+        <di:waypoint x="1060" y="920"/>
+        <di:waypoint x="1060" y="323.0"/>
+        <di:waypoint x="1085.0" y="323.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1028.9" y="903" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow8" bpmnElement="Screen_flow8">
+        <di:waypoint x="1223.0" y="323.0"/>
+        <di:waypoint x="1250" y="323.0"/>
+        <di:waypoint x="1250" y="320"/>
+        <di:waypoint x="1290" y="320"/>
+        <di:waypoint x="1290" y="323.0"/>
+        <di:waypoint x="1312.0" y="323.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow9" bpmnElement="Screen_flow9">
+        <di:waypoint x="1356.0" y="323.0"/>
+        <di:waypoint x="1380" y="323.0"/>
+        <di:waypoint x="1380" y="120"/>
+        <di:waypoint x="1420" y="120"/>
+        <di:waypoint x="1420" y="123.0"/>
+        <di:waypoint x="1445.0" y="123.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1385" y="215.5" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow10" bpmnElement="Screen_flow10">
+        <di:waypoint x="1356.0" y="323.0"/>
+        <di:waypoint x="1380" y="323.0"/>
+        <di:waypoint x="1380" y="320"/>
+        <di:waypoint x="1620" y="320"/>
+        <di:waypoint x="1620" y="1020"/>
+        <di:waypoint x="1650" y="1020"/>
+        <di:waypoint x="1650" y="1023.0"/>
+        <di:waypoint x="1673.0" y="1023.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1491.6" y="303" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow11" bpmnElement="Screen_flow11">
+        <di:waypoint x="1514.0" y="166.0"/>
+        <di:waypoint x="1510" y="166.0"/>
+        <di:waypoint x="1510" y="190"/>
+        <di:waypoint x="1430" y="190"/>
+        <di:waypoint x="1430" y="1023.0"/>
+        <di:waypoint x="1403.0" y="1023.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1435" y="600.5" width="92.4" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow12" bpmnElement="Screen_flow12">
+        <di:waypoint x="1575.0" y="180.0"/>
+        <di:waypoint x="1580" y="180.0"/>
+        <di:waypoint x="1580" y="980"/>
+        <di:waypoint x="1690" y="980"/>
+        <di:waypoint x="1690" y="1002.0"/>
+        <di:waypoint x="1694.0" y="1002.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow13" bpmnElement="Screen_flow13">
+        <di:waypoint x="872.0" y="963.0"/>
+        <di:waypoint x="900" y="963.0"/>
+        <di:waypoint x="900" y="490"/>
+        <di:waypoint x="970" y="490"/>
+        <di:waypoint x="970" y="466.0"/>
+        <di:waypoint x="974.0" y="466.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow14" bpmnElement="Screen_flow14">
+        <di:waypoint x="974.0" y="466.0"/>
+        <di:waypoint x="970" y="466.0"/>
+        <di:waypoint x="970" y="901.0"/>
+        <di:waypoint x="974.0" y="901.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Screen_flow15" bpmnElement="Screen_flow15">
+        <di:waypoint x="1265.0" y="1023.0"/>
+        <di:waypoint x="1240" y="1023.0"/>
+        <di:waypoint x="1240" y="1030"/>
+        <di:waypoint x="530" y="1030"/>
+        <di:waypoint x="530" y="323.0"/>
+        <di:waypoint x="503.0" y="323.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="833.4" y="1013" width="103.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_Review" name="06 | Committee decision, revisions and review SLA">
+    <bpmndi:BPMNPlane id="Plane_Review" bpmnElement="Case_Review">
+      <bpmndi:BPMNShape id="Shape_Review_lane0" bpmnElement="Review_lane0" isHorizontal="true">
+        <dc:Bounds x="20" y="68" width="1930" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_lane1" bpmnElement="Review_lane1" isHorizontal="true">
+        <dc:Bounds x="20" y="268" width="1930" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_lane2" bpmnElement="Review_lane2" isHorizontal="true">
+        <dc:Bounds x="20" y="468" width="1930" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_lane3" bpmnElement="Review_lane3" isHorizontal="true">
+        <dc:Bounds x="20" y="668" width="1930" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_lane4" bpmnElement="Review_lane4" isHorizontal="true">
+        <dc:Bounds x="20" y="868" width="1930" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_Start" bpmnElement="Review_Start">
+        <dc:Bounds x="233.0" y="502.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="205.55" y="549.0" width="96.9" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_Review" bpmnElement="Review_Review">
+        <dc:Bounds x="365.0" y="480.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_Decision" bpmnElement="Review_Decision">
+        <dc:Bounds x="592.0" y="501.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="588.35" y="550.0" width="51.300000000000004" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_End" bpmnElement="Review_End">
+        <dc:Bounds x="1853.0" y="502.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1851.2" y="549.0" width="45.6" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_RevLimit" bpmnElement="Review_RevLimit">
+        <dc:Bounds x="772.0" y="501.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="737.0" y="550.0" width="114.0" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_Revise" bpmnElement="Review_Revise">
+        <dc:Bounds x="905.0" y="80.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_RevDue" bpmnElement="Review_RevDue">
+        <dc:Bounds x="1018.0" y="146.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1059.0" y="184.0" width="34.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_FinalDecision" bpmnElement="Review_FinalDecision">
+        <dc:Bounds x="1085.0" y="480.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_FinalOK" bpmnElement="Review_FinalOK">
+        <dc:Bounds x="1312.0" y="501.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1308.35" y="550.0" width="51.300000000000004" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_NewAllowed" bpmnElement="Review_NewAllowed">
+        <dc:Bounds x="1492.0" y="301.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1459.85" y="350.0" width="108.3" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_NewTopic" bpmnElement="Review_NewTopic">
+        <dc:Bounds x="1625.0" y="80.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_NewDue" bpmnElement="Review_NewDue">
+        <dc:Bounds x="1738.0" y="146.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1779.0" y="184.0" width="34.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_Closed" bpmnElement="Review_Closed">
+        <dc:Bounds x="1853.0" y="1002.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1817.0" y="1049.0" width="114.0" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_Reminder" bpmnElement="Review_Reminder">
+        <dc:Bounds x="486.0" y="505.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="528.0" y="480.0" width="34.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_Remind" bpmnElement="Review_Remind">
+        <dc:Bounds x="545.0" y="380.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_RemEnd" bpmnElement="Review_RemEnd">
+        <dc:Bounds x="773.0" y="402.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="756.95" y="449.0" width="74.10000000000001" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_Escalate" bpmnElement="Review_Escalate">
+        <dc:Bounds x="415.0" y="463.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="457.0" y="451.0" width="34.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_ThrowEsc" bpmnElement="Review_ThrowEsc">
+        <dc:Bounds x="953.0" y="602.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="939.8" y="649.0" width="68.4" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_EscEnd" bpmnElement="Review_EscEnd">
+        <dc:Bounds x="1133.0" y="602.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1114.1" y="649.0" width="79.8" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_HardDue" bpmnElement="Review_HardDue">
+        <dc:Bounds x="348.0" y="505.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="300.1" y="480.0" width="39.9" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_FinalDue" bpmnElement="Review_FinalDue">
+        <dc:Bounds x="1198.0" y="546.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1239.0" y="584.0" width="34.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_Revalidate" bpmnElement="Review_Revalidate">
+        <dc:Bounds x="1445.0" y="880.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Review_Rescreen" bpmnElement="Review_Rescreen">
+        <dc:Bounds x="1805.0" y="380.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Review_flow1" bpmnElement="Review_flow1">
+        <di:waypoint x="275.0" y="523.0"/>
+        <di:waypoint x="300" y="523.0"/>
+        <di:waypoint x="300" y="520"/>
+        <di:waypoint x="330" y="520"/>
+        <di:waypoint x="330" y="590"/>
+        <di:waypoint x="430" y="590"/>
+        <di:waypoint x="430" y="566.0"/>
+        <di:waypoint x="434.0" y="566.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow2" bpmnElement="Review_flow2">
+        <di:waypoint x="434.0" y="566.0"/>
+        <di:waypoint x="430" y="566.0"/>
+        <di:waypoint x="430" y="590"/>
+        <di:waypoint x="570" y="590"/>
+        <di:waypoint x="570" y="523.0"/>
+        <di:waypoint x="592.0" y="523.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow3" bpmnElement="Review_flow3">
+        <di:waypoint x="636.0" y="523.0"/>
+        <di:waypoint x="660" y="523.0"/>
+        <di:waypoint x="660" y="520"/>
+        <di:waypoint x="750" y="520"/>
+        <di:waypoint x="750" y="480"/>
+        <di:waypoint x="1070" y="480"/>
+        <di:waypoint x="1070" y="460"/>
+        <di:waypoint x="1790" y="460"/>
+        <di:waypoint x="1790" y="520"/>
+        <di:waypoint x="1830" y="520"/>
+        <di:waypoint x="1830" y="523.0"/>
+        <di:waypoint x="1853.0" y="523.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="683.1" y="503" width="43.800000000000004" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow4" bpmnElement="Review_flow4">
+        <di:waypoint x="636.0" y="523.0"/>
+        <di:waypoint x="660" y="523.0"/>
+        <di:waypoint x="660" y="530"/>
+        <di:waypoint x="750" y="530"/>
+        <di:waypoint x="750" y="523.0"/>
+        <di:waypoint x="772.0" y="523.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="685.8" y="513" width="38.400000000000006" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow5" bpmnElement="Review_flow5">
+        <di:waypoint x="636.0" y="523.0"/>
+        <di:waypoint x="660" y="523.0"/>
+        <di:waypoint x="660" y="490"/>
+        <di:waypoint x="740" y="490"/>
+        <di:waypoint x="740" y="320"/>
+        <di:waypoint x="1470" y="320"/>
+        <di:waypoint x="1470" y="323.0"/>
+        <di:waypoint x="1492.0" y="323.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="680.8" y="473" width="38.400000000000006" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow6" bpmnElement="Review_flow6">
+        <di:waypoint x="816.0" y="523.0"/>
+        <di:waypoint x="840" y="523.0"/>
+        <di:waypoint x="840" y="520"/>
+        <di:waypoint x="880" y="520"/>
+        <di:waypoint x="880" y="123.0"/>
+        <di:waypoint x="905.0" y="123.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="848.9" y="503" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow7" bpmnElement="Review_flow7">
+        <di:waypoint x="816.0" y="523.0"/>
+        <di:waypoint x="840" y="523.0"/>
+        <di:waypoint x="840" y="520"/>
+        <di:waypoint x="1060" y="520"/>
+        <di:waypoint x="1060" y="523.0"/>
+        <di:waypoint x="1085.0" y="523.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="941.6" y="503" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow8" bpmnElement="Review_flow8">
+        <di:waypoint x="1043.0" y="123.0"/>
+        <di:waypoint x="1070" y="123.0"/>
+        <di:waypoint x="1070" y="120"/>
+        <di:waypoint x="1420" y="120"/>
+        <di:waypoint x="1420" y="923.0"/>
+        <di:waypoint x="1445.0" y="923.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1198.8" y="103" width="92.4" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow9" bpmnElement="Review_flow9">
+        <di:waypoint x="1035.0" y="180.0"/>
+        <di:waypoint x="1040" y="180.0"/>
+        <di:waypoint x="1040" y="1020"/>
+        <di:waypoint x="1830" y="1020"/>
+        <di:waypoint x="1830" y="1023.0"/>
+        <di:waypoint x="1853.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow10" bpmnElement="Review_flow10">
+        <di:waypoint x="1223.0" y="523.0"/>
+        <di:waypoint x="1250" y="523.0"/>
+        <di:waypoint x="1250" y="520"/>
+        <di:waypoint x="1290" y="520"/>
+        <di:waypoint x="1290" y="523.0"/>
+        <di:waypoint x="1312.0" y="523.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow11" bpmnElement="Review_flow11">
+        <di:waypoint x="1356.0" y="523.0"/>
+        <di:waypoint x="1380" y="523.0"/>
+        <di:waypoint x="1380" y="520"/>
+        <di:waypoint x="1830" y="520"/>
+        <di:waypoint x="1830" y="523.0"/>
+        <di:waypoint x="1853.0" y="523.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1593.9" y="503" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow12" bpmnElement="Review_flow12">
+        <di:waypoint x="1356.0" y="523.0"/>
+        <di:waypoint x="1380" y="523.0"/>
+        <di:waypoint x="1380" y="330"/>
+        <di:waypoint x="1470" y="330"/>
+        <di:waypoint x="1470" y="323.0"/>
+        <di:waypoint x="1492.0" y="323.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1385" y="420.5" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow13" bpmnElement="Review_flow13">
+        <di:waypoint x="1536.0" y="323.0"/>
+        <di:waypoint x="1560" y="323.0"/>
+        <di:waypoint x="1560" y="120"/>
+        <di:waypoint x="1600" y="120"/>
+        <di:waypoint x="1600" y="123.0"/>
+        <di:waypoint x="1625.0" y="123.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1565" y="215.5" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow14" bpmnElement="Review_flow14">
+        <di:waypoint x="1536.0" y="323.0"/>
+        <di:waypoint x="1560" y="323.0"/>
+        <di:waypoint x="1560" y="320"/>
+        <di:waypoint x="1780" y="320"/>
+        <di:waypoint x="1780" y="980"/>
+        <di:waypoint x="1870" y="980"/>
+        <di:waypoint x="1870" y="1002.0"/>
+        <di:waypoint x="1874.0" y="1002.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1661.6" y="303" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow15" bpmnElement="Review_flow15">
+        <di:waypoint x="1694.0" y="166.0"/>
+        <di:waypoint x="1690" y="166.0"/>
+        <di:waypoint x="1690" y="190"/>
+        <di:waypoint x="1610" y="190"/>
+        <di:waypoint x="1610" y="923.0"/>
+        <di:waypoint x="1583.0" y="923.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1615" y="550.5" width="92.4" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow16" bpmnElement="Review_flow16">
+        <di:waypoint x="1755.0" y="180.0"/>
+        <di:waypoint x="1760" y="180.0"/>
+        <di:waypoint x="1760" y="1010"/>
+        <di:waypoint x="1830" y="1010"/>
+        <di:waypoint x="1830" y="1023.0"/>
+        <di:waypoint x="1853.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow17" bpmnElement="Review_flow17">
+        <di:waypoint x="520.0" y="522.0"/>
+        <di:waypoint x="540" y="522.0"/>
+        <di:waypoint x="540" y="580"/>
+        <di:waypoint x="710" y="580"/>
+        <di:waypoint x="710" y="423.0"/>
+        <di:waypoint x="683.0" y="423.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow18" bpmnElement="Review_flow18">
+        <di:waypoint x="683.0" y="423.0"/>
+        <di:waypoint x="710" y="423.0"/>
+        <di:waypoint x="710" y="420"/>
+        <di:waypoint x="750" y="420"/>
+        <di:waypoint x="750" y="423.0"/>
+        <di:waypoint x="773.0" y="423.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow19" bpmnElement="Review_flow19">
+        <di:waypoint x="432.0" y="463.0"/>
+        <di:waypoint x="430" y="463.0"/>
+        <di:waypoint x="430" y="360"/>
+        <di:waypoint x="930" y="360"/>
+        <di:waypoint x="930" y="623.0"/>
+        <di:waypoint x="953.0" y="623.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow20" bpmnElement="Review_flow20">
+        <di:waypoint x="995.0" y="623.0"/>
+        <di:waypoint x="1020" y="623.0"/>
+        <di:waypoint x="1020" y="620"/>
+        <di:waypoint x="1110" y="620"/>
+        <di:waypoint x="1110" y="623.0"/>
+        <di:waypoint x="1133.0" y="623.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow21" bpmnElement="Review_flow21">
+        <di:waypoint x="348.0" y="522.0"/>
+        <di:waypoint x="320" y="522.0"/>
+        <di:waypoint x="320" y="1030"/>
+        <di:waypoint x="1830" y="1030"/>
+        <di:waypoint x="1830" y="1023.0"/>
+        <di:waypoint x="1853.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow22" bpmnElement="Review_flow22">
+        <di:waypoint x="1215.0" y="580.0"/>
+        <di:waypoint x="1220" y="580.0"/>
+        <di:waypoint x="1220" y="1000"/>
+        <di:waypoint x="1830" y="1000"/>
+        <di:waypoint x="1830" y="1023.0"/>
+        <di:waypoint x="1853.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow23" bpmnElement="Review_flow23">
+        <di:waypoint x="1583.0" y="923.0"/>
+        <di:waypoint x="1610" y="923.0"/>
+        <di:waypoint x="1610" y="920"/>
+        <di:waypoint x="1770" y="920"/>
+        <di:waypoint x="1770" y="420"/>
+        <di:waypoint x="1780" y="420"/>
+        <di:waypoint x="1780" y="423.0"/>
+        <di:waypoint x="1805.0" y="423.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Review_flow24" bpmnElement="Review_flow24">
+        <di:waypoint x="1805.0" y="423.0"/>
+        <di:waypoint x="1780" y="423.0"/>
+        <di:waypoint x="1780" y="420"/>
+        <di:waypoint x="890" y="420"/>
+        <di:waypoint x="890" y="600"/>
+        <di:waypoint x="430" y="600"/>
+        <di:waypoint x="430" y="566.0"/>
+        <di:waypoint x="434.0" y="566.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1283.4" y="403" width="103.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_Allocate" name="07 | Guide allocation, capacity and compensation">
+    <bpmndi:BPMNPlane id="Plane_Allocate" bpmnElement="Case_Allocate">
+      <bpmndi:BPMNShape id="Shape_Allocate_lane0" bpmnElement="Allocate_lane0" isHorizontal="true">
+        <dc:Bounds x="20" y="68" width="2110" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_lane1" bpmnElement="Allocate_lane1" isHorizontal="true">
+        <dc:Bounds x="20" y="268" width="2110" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_lane2" bpmnElement="Allocate_lane2" isHorizontal="true">
+        <dc:Bounds x="20" y="468" width="2110" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_lane3" bpmnElement="Allocate_lane3" isHorizontal="true">
+        <dc:Bounds x="20" y="668" width="2110" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_lane4" bpmnElement="Allocate_lane4" isHorizontal="true">
+        <dc:Bounds x="20" y="868" width="2110" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Start" bpmnElement="Allocate_Start">
+        <dc:Bounds x="233.0" y="902.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="205.55" y="949.0" width="96.9" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Rule" bpmnElement="Allocate_Rule">
+        <dc:Bounds x="365.0" y="880.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Available" bpmnElement="Allocate_Available">
+        <dc:Bounds x="592.0" y="901.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="559.85" y="950.0" width="108.3" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Manual" bpmnElement="Allocate_Manual">
+        <dc:Bounds x="725.0" y="280.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_WaitDue" bpmnElement="Allocate_WaitDue">
+        <dc:Bounds x="838.0" y="346.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="879.0" y="384.0" width="39.9" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Selected" bpmnElement="Allocate_Selected">
+        <dc:Bounds x="952.0" y="301.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="939.8" y="350.0" width="68.4" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Lapsed" bpmnElement="Allocate_Lapsed">
+        <dc:Bounds x="2033.0" y="1002.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2008.4" y="1049.0" width="91.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Reserve" bpmnElement="Allocate_Reserve">
+        <dc:Bounds x="1085.0" y="880.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Send" bpmnElement="Allocate_Send">
+        <dc:Bounds x="1265.0" y="880.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Accept" bpmnElement="Allocate_Accept">
+        <dc:Bounds x="1445.0" y="680.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_NoReply" bpmnElement="Allocate_NoReply">
+        <dc:Bounds x="1558.0" y="746.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1599.0" y="784.0" width="34.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Accepted" bpmnElement="Allocate_Accepted">
+        <dc:Bounds x="1672.0" y="701.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1668.35" y="750.0" width="51.300000000000004" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_End" bpmnElement="Allocate_End">
+        <dc:Bounds x="2033.0" y="902.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="2011.25" y="949.0" width="85.5" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Undo" bpmnElement="Allocate_Undo">
+        <dc:Bounds x="1673.0" y="1002.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1662.65" y="1049.0" width="62.7" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Exclude" bpmnElement="Allocate_Exclude">
+        <dc:Bounds x="1805.0" y="980.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Comp" bpmnElement="Allocate_Comp">
+        <dc:Bounds x="1135.0" y="863.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1177.0" y="851.0" width="114.0" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Release" bpmnElement="Allocate_Release">
+        <dc:Bounds x="1085.0" y="380.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_RuleError" bpmnElement="Allocate_RuleError">
+        <dc:Bounds x="478.0" y="946.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="519.0" y="984.0" width="108.3" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Conflict" bpmnElement="Allocate_Conflict">
+        <dc:Bounds x="1198.0" y="946.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1239.0" y="984.0" width="102.60000000000001" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Reconcile" bpmnElement="Allocate_Reconcile">
+        <dc:Bounds x="1265.0" y="380.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_SendError" bpmnElement="Allocate_SendError">
+        <dc:Bounds x="1378.0" y="946.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1419.0" y="984.0" width="79.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_Contact" bpmnElement="Allocate_Contact">
+        <dc:Bounds x="1445.0" y="380.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Allocate_ManualAcceptDue" bpmnElement="Allocate_ManualAcceptDue">
+        <dc:Bounds x="1558.0" y="446.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1599.0" y="484.0" width="34.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow1" bpmnElement="Allocate_flow1">
+        <di:waypoint x="275.0" y="923.0"/>
+        <di:waypoint x="300" y="923.0"/>
+        <di:waypoint x="300" y="920"/>
+        <di:waypoint x="340" y="920"/>
+        <di:waypoint x="340" y="923.0"/>
+        <di:waypoint x="365.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow2" bpmnElement="Allocate_flow2">
+        <di:waypoint x="503.0" y="923.0"/>
+        <di:waypoint x="530" y="923.0"/>
+        <di:waypoint x="530" y="920"/>
+        <di:waypoint x="570" y="920"/>
+        <di:waypoint x="570" y="923.0"/>
+        <di:waypoint x="592.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow3" bpmnElement="Allocate_flow3">
+        <di:waypoint x="636.0" y="923.0"/>
+        <di:waypoint x="660" y="923.0"/>
+        <di:waypoint x="660" y="920"/>
+        <di:waypoint x="1060" y="920"/>
+        <di:waypoint x="1060" y="923.0"/>
+        <di:waypoint x="1085.0" y="923.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="848.9" y="903" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow4" bpmnElement="Allocate_flow4">
+        <di:waypoint x="636.0" y="923.0"/>
+        <di:waypoint x="660" y="923.0"/>
+        <di:waypoint x="660" y="320"/>
+        <di:waypoint x="700" y="320"/>
+        <di:waypoint x="700" y="323.0"/>
+        <di:waypoint x="725.0" y="323.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="665" y="615.5" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow5" bpmnElement="Allocate_flow5">
+        <di:waypoint x="863.0" y="323.0"/>
+        <di:waypoint x="890" y="323.0"/>
+        <di:waypoint x="890" y="320"/>
+        <di:waypoint x="930" y="320"/>
+        <di:waypoint x="930" y="323.0"/>
+        <di:waypoint x="952.0" y="323.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow6" bpmnElement="Allocate_flow6">
+        <di:waypoint x="996.0" y="323.0"/>
+        <di:waypoint x="1020" y="323.0"/>
+        <di:waypoint x="1020" y="320"/>
+        <di:waypoint x="1060" y="320"/>
+        <di:waypoint x="1060" y="923.0"/>
+        <di:waypoint x="1085.0" y="923.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1028.9" y="303" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow7" bpmnElement="Allocate_flow7">
+        <di:waypoint x="996.0" y="323.0"/>
+        <di:waypoint x="1020" y="323.0"/>
+        <di:waypoint x="1020" y="330"/>
+        <di:waypoint x="1990" y="330"/>
+        <di:waypoint x="1990" y="1020"/>
+        <di:waypoint x="2010" y="1020"/>
+        <di:waypoint x="2010" y="1023.0"/>
+        <di:waypoint x="2033.0" y="1023.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1496.6" y="313" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow8" bpmnElement="Allocate_flow8">
+        <di:waypoint x="855.0" y="380.0"/>
+        <di:waypoint x="860" y="380.0"/>
+        <di:waypoint x="860" y="830"/>
+        <di:waypoint x="1980" y="830"/>
+        <di:waypoint x="1980" y="1020"/>
+        <di:waypoint x="2010" y="1020"/>
+        <di:waypoint x="2010" y="1023.0"/>
+        <di:waypoint x="2033.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow9" bpmnElement="Allocate_flow9">
+        <di:waypoint x="1223.0" y="923.0"/>
+        <di:waypoint x="1250" y="923.0"/>
+        <di:waypoint x="1250" y="920"/>
+        <di:waypoint x="1240" y="920"/>
+        <di:waypoint x="1240" y="923.0"/>
+        <di:waypoint x="1265.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow10" bpmnElement="Allocate_flow10">
+        <di:waypoint x="1403.0" y="923.0"/>
+        <di:waypoint x="1430" y="923.0"/>
+        <di:waypoint x="1430" y="720"/>
+        <di:waypoint x="1420" y="720"/>
+        <di:waypoint x="1420" y="723.0"/>
+        <di:waypoint x="1445.0" y="723.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow11" bpmnElement="Allocate_flow11">
+        <di:waypoint x="1583.0" y="723.0"/>
+        <di:waypoint x="1610" y="723.0"/>
+        <di:waypoint x="1610" y="720"/>
+        <di:waypoint x="1650" y="720"/>
+        <di:waypoint x="1650" y="723.0"/>
+        <di:waypoint x="1672.0" y="723.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow12" bpmnElement="Allocate_flow12">
+        <di:waypoint x="1716.0" y="723.0"/>
+        <di:waypoint x="1740" y="723.0"/>
+        <di:waypoint x="1740" y="720"/>
+        <di:waypoint x="2010" y="720"/>
+        <di:waypoint x="2010" y="923.0"/>
+        <di:waypoint x="2033.0" y="923.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1863.9" y="703" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow13" bpmnElement="Allocate_flow13">
+        <di:waypoint x="1716.0" y="723.0"/>
+        <di:waypoint x="1740" y="723.0"/>
+        <di:waypoint x="1740" y="1023.0"/>
+        <di:waypoint x="1715.0" y="1023.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1745" y="867.0" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow14" bpmnElement="Allocate_flow14">
+        <di:waypoint x="1592.0" y="763.0"/>
+        <di:waypoint x="1620" y="763.0"/>
+        <di:waypoint x="1620" y="760"/>
+        <di:waypoint x="1650" y="760"/>
+        <di:waypoint x="1650" y="1023.0"/>
+        <di:waypoint x="1673.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow15" bpmnElement="Allocate_flow15">
+        <di:waypoint x="1715.0" y="1023.0"/>
+        <di:waypoint x="1740" y="1023.0"/>
+        <di:waypoint x="1740" y="1020"/>
+        <di:waypoint x="1780" y="1020"/>
+        <di:waypoint x="1780" y="1023.0"/>
+        <di:waypoint x="1805.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow16" bpmnElement="Allocate_flow16">
+        <di:waypoint x="1805.0" y="1023.0"/>
+        <di:waypoint x="1780" y="1023.0"/>
+        <di:waypoint x="1780" y="980"/>
+        <di:waypoint x="1520" y="980"/>
+        <di:waypoint x="1520" y="1030"/>
+        <di:waypoint x="430" y="1030"/>
+        <di:waypoint x="430" y="966.0"/>
+        <di:waypoint x="434.0" y="966.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1609.2" y="963" width="81.60000000000001" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow17" bpmnElement="Allocate_flow17">
+        <di:waypoint x="512.0" y="963.0"/>
+        <di:waypoint x="540" y="963.0"/>
+        <di:waypoint x="540" y="330"/>
+        <di:waypoint x="700" y="330"/>
+        <di:waypoint x="700" y="323.0"/>
+        <di:waypoint x="725.0" y="323.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow18" bpmnElement="Allocate_flow18">
+        <di:waypoint x="1215.0" y="980.0"/>
+        <di:waypoint x="1220" y="980.0"/>
+        <di:waypoint x="1220" y="1000"/>
+        <di:waypoint x="1070" y="1000"/>
+        <di:waypoint x="1070" y="490"/>
+        <di:waypoint x="1240" y="490"/>
+        <di:waypoint x="1240" y="423.0"/>
+        <di:waypoint x="1265.0" y="423.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow19" bpmnElement="Allocate_flow19">
+        <di:waypoint x="1334.0" y="466.0"/>
+        <di:waypoint x="1330" y="466.0"/>
+        <di:waypoint x="1330" y="820"/>
+        <di:waypoint x="530" y="820"/>
+        <di:waypoint x="530" y="923.0"/>
+        <di:waypoint x="503.0" y="923.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1335" y="637.0" width="43.800000000000004" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow20" bpmnElement="Allocate_flow20">
+        <di:waypoint x="1412.0" y="963.0"/>
+        <di:waypoint x="1440" y="963.0"/>
+        <di:waypoint x="1440" y="930"/>
+        <di:waypoint x="1420" y="930"/>
+        <di:waypoint x="1420" y="423.0"/>
+        <di:waypoint x="1445.0" y="423.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow21" bpmnElement="Allocate_flow21">
+        <di:waypoint x="1514.0" y="466.0"/>
+        <di:waypoint x="1510" y="466.0"/>
+        <di:waypoint x="1510" y="680.0"/>
+        <di:waypoint x="1514.0" y="680.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_flow22" bpmnElement="Allocate_flow22">
+        <di:waypoint x="1592.0" y="463.0"/>
+        <di:waypoint x="1620" y="463.0"/>
+        <di:waypoint x="1620" y="460"/>
+        <di:waypoint x="1650" y="460"/>
+        <di:waypoint x="1650" y="780"/>
+        <di:waypoint x="1690" y="780"/>
+        <di:waypoint x="1690" y="1002.0"/>
+        <di:waypoint x="1694.0" y="1002.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Allocate_assoc0" bpmnElement="Allocate_assoc0">
+        <di:waypoint x="1152.0" y="863.0"/>
+        <di:waypoint x="1150" y="863.0"/>
+        <di:waypoint x="1150" y="466.0"/>
+        <di:waypoint x="1154.0" y="466.0"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmndi:BPMNDiagram id="Diagram_Finalize" name="08 | Durable recording, notification and fallback">
+    <bpmndi:BPMNPlane id="Plane_Finalize" bpmnElement="Case_Finalize">
+      <bpmndi:BPMNShape id="Shape_Finalize_lane0" bpmnElement="Finalize_lane0" isHorizontal="true">
+        <dc:Bounds x="20" y="68" width="1570" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_lane1" bpmnElement="Finalize_lane1" isHorizontal="true">
+        <dc:Bounds x="20" y="268" width="1570" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_lane2" bpmnElement="Finalize_lane2" isHorizontal="true">
+        <dc:Bounds x="20" y="468" width="1570" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_lane3" bpmnElement="Finalize_lane3" isHorizontal="true">
+        <dc:Bounds x="20" y="668" width="1570" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_lane4" bpmnElement="Finalize_lane4" isHorizontal="true">
+        <dc:Bounds x="20" y="868" width="1570" height="200"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_Start" bpmnElement="Finalize_Start">
+        <dc:Bounds x="233.0" y="902.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="214.1" y="949.0" width="79.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_Record" bpmnElement="Finalize_Record">
+        <dc:Bounds x="365.0" y="880.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_Split" bpmnElement="Finalize_Split">
+        <dc:Bounds x="592.0" y="901.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="576.95" y="950.0" width="74.10000000000001" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_Notify" bpmnElement="Finalize_Notify">
+        <dc:Bounds x="725.0" y="880.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_Archive" bpmnElement="Finalize_Archive">
+        <dc:Bounds x="905.0" y="980.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_Join" bpmnElement="Finalize_Join">
+        <dc:Bounds x="1312.0" y="901.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1296.95" y="950.0" width="74.10000000000001" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_End" bpmnElement="Finalize_End">
+        <dc:Bounds x="1493.0" y="902.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1479.8" y="949.0" width="68.4" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_DBError" bpmnElement="Finalize_DBError">
+        <dc:Bounds x="478.0" y="946.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="519.0" y="984.0" width="79.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_Retry" bpmnElement="Finalize_Retry">
+        <dc:Bounds x="412.0" y="301.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="382.7" y="350.0" width="102.60000000000001" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_Wait" bpmnElement="Finalize_Wait">
+        <dc:Bounds x="593.0" y="302.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="574.1" y="349.0" width="79.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_ManualRecord" bpmnElement="Finalize_ManualRecord">
+        <dc:Bounds x="725.0" y="280.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_NotifyError" bpmnElement="Finalize_NotifyError">
+        <dc:Bounds x="838.0" y="946.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="809.4" y="987.0" width="91.2" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_NoticeRetry" bpmnElement="Finalize_NoticeRetry">
+        <dc:Bounds x="952.0" y="301.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="917.0" y="350.0" width="114.0" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_ManualNotify" bpmnElement="Finalize_ManualNotify">
+        <dc:Bounds x="1085.0" y="280.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_NoticeWait" bpmnElement="Finalize_NoticeWait">
+        <dc:Bounds x="953.0" y="102.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="934.1" y="149.0" width="79.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_ArchiveError" bpmnElement="Finalize_ArchiveError">
+        <dc:Bounds x="955.0" y="963.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="997.0" y="951.0" width="85.5" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_ManualArchive" bpmnElement="Finalize_ManualArchive">
+        <dc:Bounds x="1265.0" y="380.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_ContactDue" bpmnElement="Finalize_ContactDue">
+        <dc:Bounds x="1198.0" y="346.0" width="34" height="34"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1241.0" y="329.0" width="108.3" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_Lapsed" bpmnElement="Finalize_Lapsed">
+        <dc:Bounds x="1493.0" y="102.0" width="42" height="42"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1457.0" y="149.0" width="114.0" height="24"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_Release" bpmnElement="Finalize_Release">
+        <dc:Bounds x="1265.0" y="980.0" width="138" height="86"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_RecordMerge" bpmnElement="Finalize_RecordMerge">
+        <dc:Bounds x="514.0" y="901.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="567.0" y="884.0" width="45.6" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_NoticeMerge" bpmnElement="Finalize_NoticeMerge">
+        <dc:Bounds x="1132.0" y="901.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1131.2" y="950.0" width="45.6" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Shape_Finalize_ArchiveMerge" bpmnElement="Finalize_ArchiveMerge">
+        <dc:Bounds x="1132.0" y="1001.0" width="44" height="44"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1131.2" y="1050.0" width="45.6" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow1" bpmnElement="Finalize_flow1">
+        <di:waypoint x="275.0" y="923.0"/>
+        <di:waypoint x="300" y="923.0"/>
+        <di:waypoint x="300" y="920"/>
+        <di:waypoint x="340" y="920"/>
+        <di:waypoint x="340" y="923.0"/>
+        <di:waypoint x="365.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow2" bpmnElement="Finalize_flow2">
+        <di:waypoint x="434.0" y="880.0"/>
+        <di:waypoint x="430" y="880.0"/>
+        <di:waypoint x="430" y="860"/>
+        <di:waypoint x="540" y="860"/>
+        <di:waypoint x="540" y="901.0"/>
+        <di:waypoint x="536.0" y="901.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow3" bpmnElement="Finalize_flow3">
+        <di:waypoint x="636.0" y="923.0"/>
+        <di:waypoint x="660" y="923.0"/>
+        <di:waypoint x="660" y="920"/>
+        <di:waypoint x="700" y="920"/>
+        <di:waypoint x="700" y="923.0"/>
+        <di:waypoint x="725.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow4" bpmnElement="Finalize_flow4">
+        <di:waypoint x="636.0" y="923.0"/>
+        <di:waypoint x="660" y="923.0"/>
+        <di:waypoint x="660" y="920"/>
+        <di:waypoint x="670" y="920"/>
+        <di:waypoint x="670" y="1020"/>
+        <di:waypoint x="880" y="1020"/>
+        <di:waypoint x="880" y="1023.0"/>
+        <di:waypoint x="905.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow5" bpmnElement="Finalize_flow5">
+        <di:waypoint x="863.0" y="923.0"/>
+        <di:waypoint x="890" y="923.0"/>
+        <di:waypoint x="890" y="920"/>
+        <di:waypoint x="1110" y="920"/>
+        <di:waypoint x="1110" y="923.0"/>
+        <di:waypoint x="1132.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow6" bpmnElement="Finalize_flow6">
+        <di:waypoint x="1043.0" y="1023.0"/>
+        <di:waypoint x="1070" y="1023.0"/>
+        <di:waypoint x="1070" y="1020"/>
+        <di:waypoint x="1110" y="1020"/>
+        <di:waypoint x="1110" y="1023.0"/>
+        <di:waypoint x="1132.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow7" bpmnElement="Finalize_flow7">
+        <di:waypoint x="1356.0" y="923.0"/>
+        <di:waypoint x="1380" y="923.0"/>
+        <di:waypoint x="1380" y="920"/>
+        <di:waypoint x="1470" y="920"/>
+        <di:waypoint x="1470" y="923.0"/>
+        <di:waypoint x="1493.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow8" bpmnElement="Finalize_flow8">
+        <di:waypoint x="495.0" y="980.0"/>
+        <di:waypoint x="500" y="980.0"/>
+        <di:waypoint x="500" y="1000"/>
+        <di:waypoint x="350" y="1000"/>
+        <di:waypoint x="350" y="390"/>
+        <di:waypoint x="500" y="390"/>
+        <di:waypoint x="500" y="320"/>
+        <di:waypoint x="480" y="320"/>
+        <di:waypoint x="480" y="323.0"/>
+        <di:waypoint x="456.0" y="323.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow9" bpmnElement="Finalize_flow9">
+        <di:waypoint x="456.0" y="323.0"/>
+        <di:waypoint x="480" y="323.0"/>
+        <di:waypoint x="480" y="320"/>
+        <di:waypoint x="570" y="320"/>
+        <di:waypoint x="570" y="323.0"/>
+        <di:waypoint x="593.0" y="323.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="513.9" y="303" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow10" bpmnElement="Finalize_flow10">
+        <di:waypoint x="593.0" y="323.0"/>
+        <di:waypoint x="570" y="323.0"/>
+        <di:waypoint x="570" y="320"/>
+        <di:waypoint x="560" y="320"/>
+        <di:waypoint x="560" y="850"/>
+        <di:waypoint x="430" y="850"/>
+        <di:waypoint x="430" y="880.0"/>
+        <di:waypoint x="434.0" y="880.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="565" y="579.0" width="33.0" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow11" bpmnElement="Finalize_flow11">
+        <di:waypoint x="456.0" y="323.0"/>
+        <di:waypoint x="480" y="323.0"/>
+        <di:waypoint x="480" y="280"/>
+        <di:waypoint x="700" y="280"/>
+        <di:waypoint x="700" y="323.0"/>
+        <di:waypoint x="725.0" y="323.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="485" y="295.5" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow12" bpmnElement="Finalize_flow12">
+        <di:waypoint x="725.0" y="323.0"/>
+        <di:waypoint x="700" y="323.0"/>
+        <di:waypoint x="700" y="870"/>
+        <di:waypoint x="540" y="870"/>
+        <di:waypoint x="540" y="901.0"/>
+        <di:waypoint x="536.0" y="901.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow13" bpmnElement="Finalize_flow13">
+        <di:waypoint x="872.0" y="963.0"/>
+        <di:waypoint x="900" y="963.0"/>
+        <di:waypoint x="900" y="320"/>
+        <di:waypoint x="930" y="320"/>
+        <di:waypoint x="930" y="323.0"/>
+        <di:waypoint x="952.0" y="323.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow14" bpmnElement="Finalize_flow14">
+        <di:waypoint x="996.0" y="323.0"/>
+        <di:waypoint x="1020" y="323.0"/>
+        <di:waypoint x="1020" y="320"/>
+        <di:waypoint x="1030" y="320"/>
+        <di:waypoint x="1030" y="120"/>
+        <di:waypoint x="1020" y="120"/>
+        <di:waypoint x="1020" y="123.0"/>
+        <di:waypoint x="995.0" y="123.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1035" y="214.0" width="22.200000000000003" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow15" bpmnElement="Finalize_flow15">
+        <di:waypoint x="953.0" y="123.0"/>
+        <di:waypoint x="930" y="123.0"/>
+        <di:waypoint x="930" y="120"/>
+        <di:waypoint x="890" y="120"/>
+        <di:waypoint x="890" y="923.0"/>
+        <di:waypoint x="863.0" y="923.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="895" y="515.5" width="33.0" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow16" bpmnElement="Finalize_flow16">
+        <di:waypoint x="996.0" y="323.0"/>
+        <di:waypoint x="1020" y="323.0"/>
+        <di:waypoint x="1020" y="320"/>
+        <di:waypoint x="1060" y="320"/>
+        <di:waypoint x="1060" y="323.0"/>
+        <di:waypoint x="1085.0" y="323.0"/>
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1031.6" y="303" width="16.8" height="12"/>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow17" bpmnElement="Finalize_flow17">
+        <di:waypoint x="1154.0" y="366.0"/>
+        <di:waypoint x="1150" y="366.0"/>
+        <di:waypoint x="1150" y="901.0"/>
+        <di:waypoint x="1154.0" y="901.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow18" bpmnElement="Finalize_flow18">
+        <di:waypoint x="972.0" y="963.0"/>
+        <di:waypoint x="970" y="963.0"/>
+        <di:waypoint x="970" y="420"/>
+        <di:waypoint x="1240" y="420"/>
+        <di:waypoint x="1240" y="423.0"/>
+        <di:waypoint x="1265.0" y="423.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow19" bpmnElement="Finalize_flow19">
+        <di:waypoint x="1265.0" y="423.0"/>
+        <di:waypoint x="1240" y="423.0"/>
+        <di:waypoint x="1240" y="1020"/>
+        <di:waypoint x="1200" y="1020"/>
+        <di:waypoint x="1200" y="1023.0"/>
+        <di:waypoint x="1176.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow20" bpmnElement="Finalize_flow20">
+        <di:waypoint x="1215.0" y="380.0"/>
+        <di:waypoint x="1220" y="380.0"/>
+        <di:waypoint x="1220" y="1020"/>
+        <di:waypoint x="1240" y="1020"/>
+        <di:waypoint x="1240" y="1023.0"/>
+        <di:waypoint x="1265.0" y="1023.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow21" bpmnElement="Finalize_flow21">
+        <di:waypoint x="1403.0" y="1023.0"/>
+        <di:waypoint x="1430" y="1023.0"/>
+        <di:waypoint x="1430" y="120"/>
+        <di:waypoint x="1470" y="120"/>
+        <di:waypoint x="1470" y="123.0"/>
+        <di:waypoint x="1493.0" y="123.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow22" bpmnElement="Finalize_flow22">
+        <di:waypoint x="536.0" y="901.0"/>
+        <di:waypoint x="540" y="901.0"/>
+        <di:waypoint x="540" y="880"/>
+        <di:waypoint x="550" y="880"/>
+        <di:waypoint x="550" y="860"/>
+        <di:waypoint x="660" y="860"/>
+        <di:waypoint x="660" y="923.0"/>
+        <di:waypoint x="636.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow23" bpmnElement="Finalize_flow23">
+        <di:waypoint x="1176.0" y="923.0"/>
+        <di:waypoint x="1200" y="923.0"/>
+        <di:waypoint x="1200" y="920"/>
+        <di:waypoint x="1290" y="920"/>
+        <di:waypoint x="1290" y="923.0"/>
+        <di:waypoint x="1312.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_Finalize_flow24" bpmnElement="Finalize_flow24">
+        <di:waypoint x="1176.0" y="1023.0"/>
+        <di:waypoint x="1200" y="1023.0"/>
+        <di:waypoint x="1200" y="930"/>
+        <di:waypoint x="1290" y="930"/>
+        <di:waypoint x="1290" y="923.0"/>
+        <di:waypoint x="1312.0" y="923.0"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

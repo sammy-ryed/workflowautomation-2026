@@ -1,6 +1,6 @@
 # Workflow Automation 2026
 
-Seven process and decision models, built and validated in Camunda Modeler. Three BPMN processes for core workflows, two more BPMN processes paired with DMN decision tables for business rules. Every file opens cleanly on its own.
+BPMN and DMN models for workflow automation coursework. The original experiments contain three core BPMN workflows and two BPMN workflows paired with DMN decision tables. The new assignment models the Student Project Approval & Allocation System, with a report, eight diagram views and a register of 26 failure paths.
 
 ## What's in here
 
@@ -15,6 +15,16 @@ exp 2/
   exercise1-evaluate-loan-risk.dmn
   exercise2-order-discount-fulfillment.bpmn
   exercise2-calculate-discounts.dmn
+
+exp new assignment/
+  Assignment_1_Complete.bpmn
+  Assignment_1_Diagrams.pdf
+  Assignment_1_Report.pdf
+  Failure_Path_Register.csv
+  *_Diagram.svg
+  Diagram-*.png
+  README.txt
+  Validation_Summary.txt
 ```
 
 No subfolders inside each experiment, no build step, no dependencies. Clone it, open the files, done.
@@ -117,15 +127,40 @@ An order comes in. A DMN decision table calculates the discount based on custome
 
 ---
 
+## exp new assignment - Student Project Approval & Allocation
+
+**Assignment 1 only.** A student team submits a proposal, the department validates and screens it, a committee reviews it, and an available faculty guide formally accepts the team. Success requires an authoritative allocation record, archived evidence and delivered student notification.
+
+The model covers correction and revision loops, rejection and lapse, deadlines and review escalation, guide shortages and refusals, technical and notification failures, and student or guide withdrawal. All five responsibility lanes are represented. Reservation compensation and idempotent cleanup release guide capacity when an allocation fails or is withdrawn.
+
+### Files and suggested reading order
+
+1. [Report](exp%20new%20assignment/Assignment_1_Report.pdf): happy path, proposed policies, task types, gateway rationale and the full failure register.
+2. [Diagram PDF](exp%20new%20assignment/Assignment_1_Diagrams.pdf): eight views covering the overall case, approval workflow and detailed stages.
+3. [Editable BPMN model](exp%20new%20assignment/Assignment_1_Complete.bpmn): BPMN 2.0 XML with eight diagram planes. Validation and screening are reusable called processes; the other stages use subprocesses.
+4. [Failure Path Register](exp%20new%20assignment/Failure_Path_Register.csv): 26 failure categories mapped to exact BPMN element IDs, owners, recovery paths and limits.
+5. SVG and PNG previews: `*_Diagram.svg` and `Diagram-1.png` through `Diagram-8.png` provide independent views when an editor cannot navigate every diagram plane.
+6. [Validation summary](exp%20new%20assignment/Validation_Summary.txt) and [local README](exp%20new%20assignment/README.txt): checks, limitations and opening instructions.
+
+### Validation and assumptions
+
+The assignment XML passes the official OMG BPMN 2.0 XSD, unique-ID and reference checks, lane-membership checks, per-diagram reachability checks and exclusive/parallel gateway structure checks. All failure detection IDs in the register exist in the model. The report and diagram PDFs were rendered and visually reviewed.
+
+This is a descriptive model (`isExecutable=false`), not a deployed workflow or an engine-tested application. Deadlines, retry counts and department policy details are explicitly labelled modelling assumptions. Called processes share case data and counters under the report's modelling contract; engine-specific variable mappings are not configured. Post-completion guide replacement is a separate process.
+
+Only extracted assignment files are stored here; the transfer ZIP is not included.
+
+---
+
 ## Opening these in Camunda Modeler
 
 1. Grab Camunda Modeler (free) from camunda.com/download/modeler.
 2. Drag any .bpmn or .dmn file straight onto the app window, or use File → Open File.
-3. The diagram renders fully — shapes, labels, gateway logic, decision tables, all of it. Edit freely from there.
+3. Use the editor to inspect and edit the original experiment diagrams. For the new assignment, use subprocess and called-process navigation where supported; the supplied PDF, SVG and PNG files show all eight views.
 
 If a file opens as read-only, right-click it in Windows Explorer → Properties → uncheck Read-only, then reopen.
 
-## Validation notes
+## Validation notes for exp 1 and exp 2
 
 Each model was checked for:
 - Every task and gateway has matching incoming/outgoing sequence flows.
@@ -136,7 +171,7 @@ Each model was checked for:
 
 ## Repo structure
 
-Flat and simple on purpose. Two experiment folders, no build step, no dependencies.
+Three flat coursework folders: `exp 1`, `exp 2` and `exp new assignment`. No build step is required to view the supplied models and documents.
 
 ```bash
 git clone https://github.com/sammy-ryed/workflowautomation-2026.git
